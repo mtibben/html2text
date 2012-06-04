@@ -4,6 +4,7 @@ CHANGELOG
 
 5/6/2012
 ---------
+ * remove references to Roundcube constants
  * changed references to classname to $this
  * removed PHP4 syntax, made all variables and functions public or private
  * added PSR-0 namespacing

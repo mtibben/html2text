@@ -231,7 +231,7 @@ class Html2Text
      *  @access private
      *  @see $html, $text
      */
-    public $_converted = false;
+    private $_converted = false;
 
     /**
      *  Contains URL addresses from links to be rendered in plain text.
@@ -240,7 +240,7 @@ class Html2Text
      *  @access private
      *  @see _build_link_list()
      */
-    public $_link_list = array();
+    private $_link_list = array();
 
     /**
      * Boolean flag, true if a table of link URLs should be listed after the text.
@@ -249,7 +249,7 @@ class Html2Text
      * @access private
      * @see html2text()
      */
-    public $_do_links = true;
+    private $_do_links = true;
 
     /**
      *  Constructor.
@@ -642,14 +642,14 @@ class Html2Text
      */
     private function _strtoupper($str)
     {
-        $str = html_entity_decode($str, ENT_COMPAT, RCMAIL_CHARSET);
+        $str = html_entity_decode($str, ENT_COMPAT);
 
         if (function_exists('mb_strtoupper'))
             $str = mb_strtoupper($str);
         else
             $str = strtoupper($str);
 
-        $str = htmlspecialchars($str, ENT_COMPAT, RCMAIL_CHARSET);
+        $str = htmlspecialchars($str, ENT_COMPAT);
 
         return $str;
     }
