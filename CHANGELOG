@@ -4,6 +4,7 @@ CHANGELOG
 
 5/6/2012
 ---------
+ * changed references to classname to $this
  * removed PHP4 syntax, made all variables and functions public or private
  * added PSR-0 namespacing
  * forked RoundCube's version of html2text

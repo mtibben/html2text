@@ -426,7 +426,7 @@ class Html2Text
         $text = preg_replace($this->search, $this->replace, $text);
 
         // Run our defined tags search-and-replace with callback
-        $text = preg_replace_callback($this->callback_search, array('html2text', '_preg_callback'), $text);
+        $text = preg_replace_callback($this->callback_search, array($this, '_preg_callback'), $text);
 
         // Strip any other HTML tags
         $text = strip_tags($text, $this->allowed_tags);
@@ -517,7 +517,7 @@ class Html2Text
                 preg_replace($this->pre_search, $this->pre_replace, $matches[1]));
             // replace the content (use callback because content can contain $0 variable)
             $text = preg_replace_callback('/<pre[^>]*>.*<\/pre>/ismU',
-                array('html2text', '_preg_pre_callback'), $text, 1);
+                array($this, '_preg_pre_callback'), $text, 1);
             // free memory
             $this->pre_content = '';
         }
