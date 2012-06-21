@@ -6,6 +6,7 @@ CHANGELOG
  * use an options array instead of individual options vars
  * add a 'inline' and 'nextline' options for do_links
  * add testcase for do_links options
+ * merged RoundCube's latest changes
 
 5/6/2012
 ---------
