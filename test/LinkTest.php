@@ -20,10 +20,10 @@ Links:
 
 EOT;
 
-        $html2text = new \Html2Text\Html2Text($this->input, false, array('do_links' => 'after'));
+        $html2text = new \Html2Text\Html2Text($this->input, false, array('do_links' => 'table'));
         $output = $html2text->get_text();
 
-        $this->assertEquals($output, $expected_output);
+        $this->assertEquals($expected_output, $output);
     }
 
 
@@ -36,7 +36,7 @@ EOT;
         $html2text = new \Html2Text\Html2Text($this->input, false, array('do_links' => 'inline'));
         $output = $html2text->get_text();
 
-        $this->assertEquals($output, $expected_output);
+        $this->assertEquals($expected_output, $output);
     }
 
 
@@ -50,5 +50,18 @@ EOT;
         $output = $html2text->get_text();
 
         $this->assertEquals($output, $expected_output);
+    }
+
+    public function testDoLinksNextline()
+    {
+        $expected_output =<<<EOT
+Link text
+[http://example.com]
+EOT;
+
+        $html2text = new \Html2Text\Html2Text($this->input, false, array('do_links' => 'nextline'));
+        $output = $html2text->get_text();
+
+        $this->assertEquals($expected_output, $output);
     }
 }

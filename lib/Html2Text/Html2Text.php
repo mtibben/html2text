@@ -170,7 +170,7 @@ class Html2Text
      *  @access public
      */
     public $callback_search = array(
-        '/<(a) [^>]*href=("|\')([^"\']+)\2[^>]*>(.*?)<\/a>/i',
+        '/<(a) [^>]*href=("|\')([^"\']+)\2([^>]*)>(.*?)<\/a>/i',
                                                    // <a href="">
         '/<(h)[123456][^>]*>(.*?)<\/h[123456]>/i', // H1 - H3
         '/<(b)[^>]*>(.*?)<\/b>/i',                 // <b>
@@ -253,7 +253,10 @@ class Html2Text
      */
     private $_options = array(
 
-        // 'no', 'inline' (show links inline), 'after' (if a table of link URLs should be listed after the text.
+        // 'none'
+        // 'inline' (show links inline)
+        // 'nextline' (show links on the next line)
+        // 'table' (if a table of link URLs should be listed after the text.
         'do_links' => 'inline',
 
          //  Maximum width of the formatted text, in columns.
@@ -483,9 +486,10 @@ class Html2Text
      *  @access private
      *  @return string
      */
-    private function _build_link_list( $link, $display )
+    private function _build_link_list( $link, $display, $link_override = null)
     {
-        if ($this->_options['do_links'] == 'none')
+        $link_method = ($link_override) ? $link_override : $this->_options['do_links'];
+        if ($link_method == 'none')
             return $display;
 
 
@@ -504,7 +508,7 @@ class Html2Text
             $url .= "$link";
         }
 
-        if ($this->_options['do_links'] == 'after')
+        if ($link_method == 'table')
         {
             if (($index = array_search($url, $this->_link_list)) === false) {
                 $this->_link_list[] = $url;
@@ -513,7 +517,11 @@ class Html2Text
 
             return $display . ' [' . ($index+1) . ']';
         }
-        else // do_links == inline
+        elseif ($link_method == 'nextline')
+        {
+            return $display . "\n[" . $url . ']';
+        }
+        else // link_method defaults to inline
         {
             return $display . ' [' . $url . ']';
         }
@@ -613,9 +621,15 @@ class Html2Text
         case 'h':
             return $this->_toupper("\n\n". $matches[2] ."\n\n");
         case 'a':
+            // override the link method
+            $link_override = null;
+            if (preg_match("/_html2text_link_(\w+)/", $matches[4], $link_override_match))
+            {
+                $link_override = $link_override_match[1];
+            }
             // Remove spaces in URL (#1487805)
             $url = str_replace(' ', '', $matches[3]);
-            return $this->_build_link_list($url, $matches[4]);
+            return $this->_build_link_list($url, $matches[5], $link_override);
         }
     }
 

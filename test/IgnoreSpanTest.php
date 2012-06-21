@@ -18,6 +18,6 @@ EOT;
         $html2text = new \Html2Text\Html2Text($this->input);
         $output = $html2text->get_text();
 
-        $this->assertEquals($output, $expected_output);
+        $this->assertEquals($expected_output, $output);
     }
 }
