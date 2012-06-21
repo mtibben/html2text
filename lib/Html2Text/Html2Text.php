@@ -242,14 +242,24 @@ class Html2Text
      */
     private $_link_list = array();
 
+
     /**
-     * Boolean flag, true if a table of link URLs should be listed after the text.
+     *  Various configuration options (able to be set in the constructor)
      *
-     * @var boolean $_do_links
-     * @access private
-     * @see html2text()
+     *  @var array $_options
+     *  @access private
      */
-    private $_do_links = true;
+    private $_options = array(
+
+        // 'no', 'inline' (show links inline), 'after' (if a table of link URLs should be listed after the text.
+        'do_links' => 'inline',
+
+         //  Maximum width of the formatted text, in columns.
+         //  Set this value to 0 (or less) to ignore word wrapping
+         //  and not constrain text to a fixed-width column.
+        'width' => 70,
+    );
+
 
     /**
      *  Constructor.
@@ -260,20 +270,19 @@ class Html2Text
      *
      *  @param string $source HTML content
      *  @param boolean $from_file Indicates $source is a file to pull content from
-     *  @param boolean $do_links Indicate whether a table of link URLs is desired
-     *  @param integer $width Maximum width of the formatted text, 0 for no limit
+     *  @param array $options Set configuration options
      *  @access public
      *  @return void
      */
-    public function __construct( $source = '', $from_file = false, $do_links = true, $width = 75 )
+    public function __construct( $source = '', $from_file = false, $options = array() )
     {
+        $this->_options = array_merge($this->_options, $options);
+
         if ( !empty($source) ) {
             $this->set_html($source, $from_file);
         }
 
         $this->set_base_url();
-        $this->_do_links = $do_links;
-        $this->width = $width;
     }
 
     /**
@@ -407,7 +416,7 @@ class Html2Text
      *  First performs custom tag replacement specified by $search and
      *  $replace arrays. Then strips any remaining HTML tags, reduces whitespace
      *  and newlines to a readable format, and word wraps the text to
-     *  $width characters.
+     *  $this->_options['width'] characters.
      *
      *  @param string Reference to HTML content string
      *
@@ -454,8 +463,8 @@ class Html2Text
         // Wrap the text to a readable format
         // for PHP versions >= 4.0.2. Default width is 75
         // If width is 0 or less, don't wrap the text.
-        if ( $this->width > 0 ) {
-            $text = wordwrap($text, $this->width);
+        if ( $this->_options['width'] > 0 ) {
+            $text = wordwrap($text, $this->_options['width']);
         }
     }
 
@@ -474,15 +483,14 @@ class Html2Text
      */
     private function _build_link_list( $link, $display )
     {
-        if (!$this->_do_links || empty($link)) {
+        if ($this->_options['do_links'] == 'none')
             return $display;
-        }
+
 
         // Ignored link types
         if (preg_match('!^(javascript|mailto|#):!i', $link)) {
             return $display;
         }
-
         if (preg_match('!^(https?://)!i', $link)) {
             $url = $link;
         }
@@ -494,12 +502,19 @@ class Html2Text
             $url .= "$link";
         }
 
-        if (($index = array_search($url, $this->_link_list)) === false) {
-            $this->_link_list[] = $url;
-            $index = count($this->_link_list);
-        }
+        if ($this->_options['do_links'] == 'after')
+        {
+            if (($index = array_search($url, $this->_link_list)) === false) {
+                $this->_link_list[] = $url;
+                $index = count($this->_link_list);
+            }
 
-        return $display . ' [' . ($index+1) . ']';
+            return $display . ' [' . ($index+1) . ']';
+        }
+        else // do_links == inline
+        {
+            return $display . ' [' . $url . ']';
+        }
     }
 
     /**
@@ -550,8 +565,8 @@ class Html2Text
                         $body = substr($text, $start + $taglen - $diff, $len);
 
                         // Set text width
-                        $p_width = $this->width;
-                        if ($this->width > 0) $this->width -= 2;
+                        $p_width = $this->_options['width'];
+                        if ($this->_options['width'] > 0) $this->_options['width'] -= 2;
                         // Convert blockquote content
                         $body = trim($body);
                         $this->_converter($body);
@@ -559,7 +574,7 @@ class Html2Text
                         $body = preg_replace('/((^|\n)>*)/', '\\1> ', trim($body));
                         $body = '<pre>' . htmlspecialchars($body) . '</pre>';
                         // Re-set text width
-                        $this->width = $p_width;
+                        $this->_options['width'] = $p_width;
                         // Replace content
                         $text = substr($text, 0, $start - $diff)
                             . $body . substr($text, $end + strlen($m[0]) - $diff);
