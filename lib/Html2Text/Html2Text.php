@@ -540,7 +540,7 @@ class Html2Text
 
             // Run our defined tags search-and-replace with callback
             $this->pre_content = preg_replace_callback($this->callback_search,
-                array('html2text', '_preg_callback'), $this->pre_content);
+                array($this, '_preg_callback'), $this->pre_content);
 
             // convert the content
             $this->pre_content = sprintf('<div><br>%s<br></div>',
