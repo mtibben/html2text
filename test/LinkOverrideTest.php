@@ -2,7 +2,7 @@
 
 require_once __DIR__.'/../lib/Html2Text/Html2Text.php';
 
-class LinkTest extends PHPUnit_Framework_TestCase
+class LinkOverrideTest extends PHPUnit_Framework_TestCase
 {
     public $input =<<< EOT
 <a href="http://example.com" class="_html2text_link_nextline">Link text</a>

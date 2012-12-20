@@ -12,7 +12,7 @@ EOT;
     public function testDoLinksAfter()
     {
         $expected_output =<<<EOT
-Link text [2]
+Link text [1]
 
 Links:
 ------

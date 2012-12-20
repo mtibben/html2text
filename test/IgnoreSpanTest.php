@@ -2,7 +2,7 @@
 
 require_once __DIR__.'/../lib/Html2Text/Html2Text.php';
 
-class LinkTest extends PHPUnit_Framework_TestCase
+class IgnoreSpanTest extends PHPUnit_Framework_TestCase
 {
     public $input =<<< EOT
 Outside<span class="_html2text_ignore">Inside</span>
