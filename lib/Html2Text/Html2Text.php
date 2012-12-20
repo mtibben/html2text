@@ -64,6 +64,7 @@ class Html2Text
     public $search = array(
         "/\r/",                                  // Non-legal carriage return
         "/[\n\t]+/",                             // Newlines and tabs
+        '/<head[^>]*>.*?<\/head>/i',             // <head>
         '/<script[^>]*>.*?<\/script>/i',         // <script>s -- which strip_tags supposedly has problems with
         '/<style[^>]*>.*?<\/style>/i',           // <style>s -- which strip_tags supposedly has problems with
         '/<p[^>]*>/i',                           // <P>
@@ -92,6 +93,7 @@ class Html2Text
     public $replace = array(
         '',                                     // Non-legal carriage return
         ' ',                                    // Newlines and tabs
+        '',                                     // <head>
         '',                                     // <script>s -- which strip_tags supposedly has problems with
         '',                                     // <style>s -- which strip_tags supposedly has problems with
         "\n\n",                                 // <P>
@@ -448,7 +450,7 @@ class Html2Text
         $text = preg_replace($this->ent_search, $this->ent_replace, $text);
 
         // Replace known html entities
-        $text = html_entity_decode($text, ENT_COMPAT, 'UTF-8');
+        $text = html_entity_decode($text, ENT_QUOTES);
 
         // Remove unknown/unhandled entities (this cannot be done in search-and-replace block)
         $text = preg_replace('/&([a-zA-Z0-9]{2,6}|#[0-9]{2,4});/', '', $text);
