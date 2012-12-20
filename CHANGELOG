@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+21/12/2012
+---------
+ * Fix callback argument - fix from @dvdoug
+ * merged RoundCube's latest changes
+  * Fix stripped apostrophes
+  * Make sure <head> content (e.g. title) is not converted to plain text
+ * added composer.json and phpunit.xml.dist
+
 21/6/2012
 ---------
  * use an options array instead of individual options vars
