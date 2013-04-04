@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+4/4/2013
+---------
+ * Added support for dl/dt/dd - thanks @ffschaeffer
+
 21/12/2012
 ---------
  * Fix callback argument - fix from @dvdoug
