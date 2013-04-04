@@ -73,7 +73,10 @@ class Html2Text
         '/<em[^>]*>(.*?)<\/em>/i',               // <em>
         '/(<ul[^>]*>|<\/ul>)/i',                 // <ul> and </ul>
         '/(<ol[^>]*>|<\/ol>)/i',                 // <ol> and </ol>
+        '/(<dl[^>]*>|<\/dl>)/i',                 // <dl> and </dl>
         '/<li[^>]*>(.*?)<\/li>/i',               // <li> and </li>
+        '/<dd[^>]*>(.*?)<\/dd>/i',               // <dd> and </dd>
+        '/<dt[^>]*>(.*?)<\/dt>/i',               // <dt> and </dt>
         '/<li[^>]*>/i',                          // <li>
         '/<hr[^>]*>/i',                          // <hr>
         '/<div[^>]*>/i',                         // <div>
@@ -102,7 +105,10 @@ class Html2Text
         '_\\1_',                                // <em>
         "\n\n",                                 // <ul> and </ul>
         "\n\n",                                 // <ol> and </ol>
+        "\n\n",                                 // <dl> and </dl>
         "\t* \\1\n",                            // <li> and </li>
+        " \\1\n",                               // <dd> and </dd>
+        "\t* \\1",                              // <dt> and </dt>
         "\n\t* ",                               // <li>
         "\n-------------------------\n",        // <hr>
         "<div>\n",                              // <div>
