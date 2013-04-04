@@ -681,6 +681,7 @@ class Html2Text
 
     /**
      * Strtoupper multibyte wrapper function with HTML entities handling.
+     * Forces mb_strtoupper-call to UTF-8.
      *
      * @param string $str Text to convert
      * @return string Converted text
@@ -690,7 +691,7 @@ class Html2Text
         $str = html_entity_decode($str, ENT_COMPAT);
 
         if (function_exists('mb_strtoupper'))
-            $str = mb_strtoupper($str);
+            $str = mb_strtoupper($str, 'UTF-8');
         else
             $str = strtoupper($str);
 
