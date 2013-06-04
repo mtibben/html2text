@@ -164,7 +164,7 @@ class Html2Text
         '--',
         '-',
         '*',
-        'Â£',
+        '£',
         'EUR',                                  // Euro sign. € ?
         '|+|amp|+|',                            // Ampersand: see _converter()
         ' ',                                    // Runs of spaces, post-handling
