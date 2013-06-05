@@ -20,7 +20,6 @@
  *                                                                       *
  *************************************************************************/
 
-
 namespace Html2Text;
 
 class Html2Text
@@ -251,7 +250,6 @@ class Html2Text
      */
     private $_link_list = array();
 
-
     /**
      *  Various configuration options (able to be set in the constructor)
      *
@@ -271,7 +269,6 @@ class Html2Text
          //  and not constrain text to a fixed-width column.
         'width' => 70,
     );
-
 
     /**
      *  Constructor.
@@ -309,8 +306,7 @@ class Html2Text
     {
         if ( $from_file && file_exists($source) ) {
             $this->html = file_get_contents($source);
-        }
-        else
+        } else
             $this->html = $source;
 
         $this->_converted = false;
@@ -324,7 +320,7 @@ class Html2Text
      */
     public function get_text()
     {
-        if ( !$this->_converted ) {
+        if (!$this->_converted) {
             $this->_convert();
         }
 
@@ -475,7 +471,7 @@ class Html2Text
         // Wrap the text to a readable format
         // for PHP versions >= 4.0.2. Default width is 75
         // If width is 0 or less, don't wrap the text.
-        if ( $this->_options['width'] > 0 ) {
+        if ($this->_options['width'] > 0) {
             $text = wordwrap($text, $this->_options['width']);
         }
     }
@@ -506,8 +502,7 @@ class Html2Text
         }
         if (preg_match('!^([a-z][a-z0-9.+-]+:)!i', $link)) {
             $url = $link;
-        }
-        else {
+        } else {
             $url = $this->url;
             if (substr($link, 0, 1) != '/') {
                 $url .= '/';
@@ -515,21 +510,17 @@ class Html2Text
             $url .= "$link";
         }
 
-        if ($link_method == 'table')
-        {
+        if ($link_method == 'table') {
             if (($index = array_search($url, $this->_link_list)) === false) {
                 $index = count($this->_link_list);
                 $this->_link_list[] = $url;
             }
 
             return $display . ' [' . ($index+1) . ']';
-        }
-        elseif ($link_method == 'nextline')
-        {
+        } elseif ($link_method == 'nextline') {
             return $display . "\n[" . $url . ']';
-        }
-        else // link_method defaults to inline
-        {
+        } else { // link_method defaults to inline
+
             return $display . ' [' . $url . ']';
         }
     }
@@ -578,11 +569,9 @@ class Html2Text
                     $level--;
                     if ($level < 0) {
                         $level = 0; // malformed HTML: go to next blockquote
-                    }
-                    else if ($level > 0) {
+                    } elseif ($level > 0) {
                         // skip inner blockquote
-                    }
-                    else {
+                    } else {
                         $end  = $m[1];
                         $len  = $end - $taglen - $start;
                         // Get blockquote content
@@ -606,8 +595,7 @@ class Html2Text
                         $diff = $len + $taglen + strlen($m[0]) - strlen($body);
                         unset($body);
                     }
-                }
-                else {
+                } else {
                     if ($level == 0) {
                         $start = $m[1];
                         $taglen = strlen($m[0]);
@@ -637,12 +625,12 @@ class Html2Text
         case 'a':
             // override the link method
             $link_override = null;
-            if (preg_match("/_html2text_link_(\w+)/", $matches[4], $link_override_match))
-            {
+            if (preg_match("/_html2text_link_(\w+)/", $matches[4], $link_override_match)) {
                 $link_override = $link_override_match[1];
             }
             // Remove spaces in URL (#1487805)
             $url = str_replace(' ', '', $matches[3]);
+
             return $this->_build_link_list($url, $matches[5], $link_override);
         }
     }
@@ -661,7 +649,7 @@ class Html2Text
     /**
      * Strtoupper function with HTML tags and entities handling.
      *
-     * @param string $str Text to convert
+     * @param  string $str Text to convert
      * @return string Converted text
      */
     private function _toupper($str)
@@ -683,7 +671,7 @@ class Html2Text
      * Strtoupper multibyte wrapper function with HTML entities handling.
      * Forces mb_strtoupper-call to UTF-8.
      *
-     * @param string $str Text to convert
+     * @param  string $str Text to convert
      * @return string Converted text
      */
     private function _strtoupper($str)
