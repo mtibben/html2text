@@ -22,45 +22,43 @@
 
 namespace Html2Text;
 
+/**
+ * Converts HTML to formatted plain text
+ */
 class Html2Text
 {
+    /**
+     * Contains the HTML content to convert.
+     *
+     * @var string $html
+     */
+    protected $html;
 
     /**
-     *  Contains the HTML content to convert.
+     * Contains the converted, formatted text.
      *
-     *  @var string $html
-     *  @access public
+     * @var string $text
      */
-    public $html;
+    protected $text;
 
     /**
-     *  Contains the converted, formatted text.
+     * Maximum width of the formatted text, in columns.
      *
-     *  @var string $text
-     *  @access public
+     * Set this value to 0 (or less) to ignore word wrapping
+     * and not constrain text to a fixed-width column.
+     *
+     * @var integer $width
      */
-    public $text;
+    protected $width = 70;
 
     /**
-     *  Maximum width of the formatted text, in columns.
+     * List of preg* regular expression patterns to search for,
+     * used in conjunction with $replace.
      *
-     *  Set this value to 0 (or less) to ignore word wrapping
-     *  and not constrain text to a fixed-width column.
-     *
-     *  @var integer $width
-     *  @access public
+     * @var array $search
+     * @see $replace
      */
-    public $width = 70;
-
-    /**
-     *  List of preg* regular expression patterns to search for,
-     *  used in conjunction with $replace.
-     *
-     *  @var array $search
-     *  @access public
-     *  @see $replace
-     */
-    public $search = array(
+    protected $search = array(
         "/\r/",                                  // Non-legal carriage return
         "/[\n\t]+/",                             // Newlines and tabs
         '/<head[^>]*>.*?<\/head>/i',             // <head>
@@ -86,13 +84,12 @@ class Html2Text
     );
 
     /**
-     *  List of pattern replacements corresponding to patterns searched.
+     * List of pattern replacements corresponding to patterns searched.
      *
-     *  @var array $replace
-     *  @access public
-     *  @see $search
+     * @var array $replace
+     * @see $search
      */
-    public $replace = array(
+    protected $replace = array(
         '',                                     // Non-legal carriage return
         ' ',                                    // Newlines and tabs
         '',                                     // <head>
@@ -118,17 +115,16 @@ class Html2Text
     );
 
     /**
-     *  List of preg* regular expression patterns to search for,
-     *  used in conjunction with $ent_replace.
+     * List of preg* regular expression patterns to search for,
+     * used in conjunction with $ent_replace.
      *
-     *  @var array $ent_search
-     *  @access public
-     *  @see $ent_replace
+     * @var array $ent_search
+     * @see $ent_replace
      */
-    public $ent_search = array(
+    protected $ent_search = array(
         '/&(nbsp|#160);/i',                      // Non-breaking space
         '/&(quot|rdquo|ldquo|#8220|#8221|#147|#148);/i',
-                                                 // Double quotes
+                                         // Double quotes
         '/&(apos|rsquo|lsquo|#8216|#8217);/i',   // Single quotes
         '/&gt;/i',                               // Greater-than
         '/&lt;/i',                               // Less-than
@@ -145,13 +141,12 @@ class Html2Text
     );
 
     /**
-     *  List of pattern replacements corresponding to patterns searched.
+     * List of pattern replacements corresponding to patterns searched.
      *
-     *  @var array $ent_replace
-     *  @access public
-     *  @see $ent_search
+     * @var array $ent_replace
+     * @see $ent_search
      */
-    public $ent_replace = array(
+    protected $ent_replace = array(
         ' ',                                    // Non-breaking space
         '"',                                    // Double quotes
         "'",                                    // Single quotes
@@ -170,29 +165,27 @@ class Html2Text
     );
 
     /**
-     *  List of preg* regular expression patterns to search for
-     *  and replace using callback function.
+     * List of preg* regular expression patterns to search for
+     * and replace using callback function.
      *
-     *  @var array $callback_search
-     *  @access public
+     * @var array $callback_search
      */
-    public $callback_search = array(
+    protected $callback_search = array(
         '/<(a) [^>]*href=("|\')([^"\']+)\2([^>]*)>(.*?)<\/a>/i', // <a href="">
-        '/<(h)[123456]( [^>]*)?>(.*?)<\/h[123456]>/i',         // h1 - h6
-        '/<(b)( [^>]*)?>(.*?)<\/b>/i',                         // <b>
-        '/<(strong)( [^>]*)?>(.*?)<\/strong>/i',               // <strong>
-        '/<(th)( [^>]*)?>(.*?)<\/th>/i',                       // <th> and </th>
+        '/<(h)[123456]( [^>]*)?>(.*?)<\/h[123456]>/i',           // h1 - h6
+        '/<(b)( [^>]*)?>(.*?)<\/b>/i',                           // <b>
+        '/<(strong)( [^>]*)?>(.*?)<\/strong>/i',                 // <strong>
+        '/<(th)( [^>]*)?>(.*?)<\/th>/i',                         // <th> and </th>
     );
 
    /**
-    *  List of preg* regular expression patterns to search for in PRE body,
-    *  used in conjunction with $pre_replace.
+    * List of preg* regular expression patterns to search for in PRE body,
+    * used in conjunction with $pre_replace.
     *
-    *  @var array $pre_search
-    *  @access public
-    *  @see $pre_replace
+    * @var array $pre_search
+    * @see $pre_replace
     */
-    public $pre_search = array(
+    protected $pre_search = array(
         "/\n/",
         "/\t/",
         '/ /',
@@ -201,13 +194,12 @@ class Html2Text
     );
 
     /**
-     *  List of pattern replacements corresponding to patterns searched for PRE body.
+     * List of pattern replacements corresponding to patterns searched for PRE body.
      *
-     *  @var array $pre_replace
-     *  @access public
-     *  @see $pre_search
+     * @var array $pre_replace
+     * @see $pre_search
      */
-    public $pre_replace = array(
+    protected $pre_replace = array(
         '<br>',
         '&nbsp;&nbsp;&nbsp;&nbsp;',
         '&nbsp;',
@@ -216,47 +208,42 @@ class Html2Text
     );
 
     /**
-     *  Contains a list of HTML tags to allow in the resulting text.
+     * Contains a list of HTML tags to allow in the resulting text.
      *
-     *  @var string $allowed_tags
-     *  @access public
-     *  @see set_allowed_tags()
+     * @var string $allowed_tags
+     * @see set_allowed_tags()
      */
-    public $allowed_tags = '';
+    protected $allowed_tags = '';
 
     /**
-     *  Contains the base URL that relative links should resolve to.
+     * Contains the base URL that relative links should resolve to.
      *
-     *  @var string $url
-     *  @access public
+     * @var string $url
      */
-    public $url;
+    protected $url;
 
     /**
-     *  Indicates whether content in the $html variable has been converted yet.
+     * Indicates whether content in the $html variable has been converted yet.
      *
-     *  @var boolean $_converted
-     *  @access private
-     *  @see $html, $text
+     * @var boolean $_converted
+     * @see $html, $text
      */
-    private $_converted = false;
+    protected $_converted = false;
 
     /**
-     *  Contains URL addresses from links to be rendered in plain text.
+     * Contains URL addresses from links to be rendered in plain text.
      *
-     *  @var array $_link_list
-     *  @access private
-     *  @see _build_link_list()
+     * @var array $_link_list
+     * @see _build_link_list()
      */
-    private $_link_list = array();
+    protected $_link_list = array();
 
     /**
-     *  Various configuration options (able to be set in the constructor)
+     * Various configuration options (able to be set in the constructor)
      *
-     *  @var array $_options
-     *  @access private
+     * @var array $_options
      */
-    private $_options = array(
+    protected $_options = array(
 
         // 'none'
         // 'inline' (show links inline)
@@ -264,30 +251,28 @@ class Html2Text
         // 'table' (if a table of link URLs should be listed after the text.
         'do_links' => 'inline',
 
-         //  Maximum width of the formatted text, in columns.
-         //  Set this value to 0 (or less) to ignore word wrapping
-         //  and not constrain text to a fixed-width column.
+        //  Maximum width of the formatted text, in columns.
+        //  Set this value to 0 (or less) to ignore word wrapping
+        //  and not constrain text to a fixed-width column.
         'width' => 70,
     );
 
     /**
-     *  Constructor.
+     * Constructor.
      *
-     *  If the HTML source string (or file) is supplied, the class
-     *  will instantiate with that source propagated, all that has
-     *  to be done it to call get_text().
+     * If the HTML source string (or file) is supplied, the class
+     * will instantiate with that source propagated, all that has
+     * to be done it to call get_text().
      *
-     *  @param string $source HTML content
-     *  @param boolean $from_file Indicates $source is a file to pull content from
-     *  @param array $options Set configuration options
-     *  @access public
-     *  @return void
+     * @param string  $source    HTML content
+     * @param boolean $from_file Indicates $source is a file to pull content from
+     * @param array   $options   Set configuration options
      */
-    public function __construct( $source = '', $from_file = false, $options = array() )
+    public function __construct($source = '', $from_file = false, $options = array())
     {
         $this->_options = array_merge($this->_options, $options);
 
-        if ( !empty($source) ) {
+        if (!empty($source)) {
             $this->set_html($source, $from_file);
         }
 
@@ -295,28 +280,26 @@ class Html2Text
     }
 
     /**
-     *  Loads source HTML into memory, either from $source string or a file.
+     * Loads source HTML into memory, either from $source string or a file.
      *
-     *  @param string $source HTML content
-     *  @param boolean $from_file Indicates $source is a file to pull content from
-     *  @access public
-     *  @return void
+     * @param string  $source    HTML content
+     * @param boolean $from_file Indicates $source is a file to pull content from
      */
-    public function set_html( $source, $from_file = false )
+    public function set_html($source, $from_file = false)
     {
-        if ( $from_file && file_exists($source) ) {
+        if ($from_file && file_exists($source)) {
             $this->html = file_get_contents($source);
-        } else
+        } else {
             $this->html = $source;
+        }
 
         $this->_converted = false;
     }
 
     /**
-     *  Returns the text, converted from HTML.
+     * Returns the text, converted from HTML.
      *
-     *  @access public
-     *  @return string
+     * @return string
      */
     public function get_text()
     {
@@ -328,10 +311,7 @@ class Html2Text
     }
 
     /**
-     *  Prints the text, converted from HTML.
-     *
-     *  @access public
-     *  @return void
+     * Prints the text, converted from HTML.
      */
     public function print_text()
     {
@@ -339,11 +319,9 @@ class Html2Text
     }
 
     /**
-     *  Alias to print_text(), operates identically.
+     * Alias to print_text(), operates identically.
      *
-     *  @access public
-     *  @return void
-     *  @see print_text()
+     * @see print_text()
      */
     public function p()
     {
@@ -351,30 +329,24 @@ class Html2Text
     }
 
     /**
-     *  Sets the allowed HTML tags to pass through to the resulting text.
+     * Sets the allowed HTML tags to pass through to the resulting text.
      *
-     *  Tags should be in the form "<p>", with no corresponding closing tag.
-     *
-     *  @access public
-     *  @return void
+     * Tags should be in the form "<p>", with no corresponding closing tag.
      */
-    public function set_allowed_tags( $allowed_tags = '' )
+    public function set_allowed_tags($allowed_tags = '')
     {
-        if ( !empty($allowed_tags) ) {
+        if (!empty($allowed_tags)) {
             $this->allowed_tags = $allowed_tags;
         }
     }
 
     /**
-     *  Sets a base URL to handle relative links.
-     *
-     *  @access public
-     *  @return void
+     * Sets a base URL to handle relative links.
      */
-    public function set_base_url( $url = '' )
+    public function set_base_url($url = '')
     {
-        if ( empty($url) ) {
-            if ( !empty($_SERVER['HTTP_HOST']) ) {
+        if (empty($url)) {
+            if (!empty($_SERVER['HTTP_HOST'])) {
                 $this->url = 'http://' . $_SERVER['HTTP_HOST'];
             } else {
                 $this->url = '';
@@ -382,7 +354,7 @@ class Html2Text
         } else {
             // Strip any trailing slashes for consistency (relative
             // URLs may already start with a slash like "/file.html")
-            if ( substr($url, -1) == '/' ) {
+            if (substr($url, -1) == '/') {
                 $url = substr($url, 0, -1);
             }
             $this->url = $url;
@@ -390,12 +362,9 @@ class Html2Text
     }
 
     /**
-     *  Workhorse function that does actual conversion (calls _converter() method).
-     *
-     *  @access private
-     *  @return void
+     * Workhorse function that does actual conversion (calls _converter() method).
      */
-    private function _convert()
+    protected function _convert()
     {
         // Variables used for building the link list
         $this->_link_list = array();
@@ -419,19 +388,16 @@ class Html2Text
     }
 
     /**
-     *  Workhorse function that does actual conversion.
+     * Workhorse function that does actual conversion.
      *
-     *  First performs custom tag replacement specified by $search and
-     *  $replace arrays. Then strips any remaining HTML tags, reduces whitespace
-     *  and newlines to a readable format, and word wraps the text to
-     *  $this->_options['width'] characters.
+     * First performs custom tag replacement specified by $search and
+     * $replace arrays. Then strips any remaining HTML tags, reduces whitespace
+     * and newlines to a readable format, and word wraps the text to
+     * $this->_options['width'] characters.
      *
-     *  @param string Reference to HTML content string
-     *
-     *  @access private
-     *  @return void
+     * @param string Reference to HTML content string
      */
-    private function _converter(&$text)
+    protected function _converter(&$text)
     {
         // Convert <BLOCKQUOTE> (before PRE!)
         $this->_convert_blockquotes($text);
@@ -477,19 +443,18 @@ class Html2Text
     }
 
     /**
-     *  Helper function called by preg_replace() on link replacement.
+     * Helper function called by preg_replace() on link replacement.
      *
-     *  Maintains an internal list of links to be displayed at the end of the
-     *  text, with numeric indices to the original point in the text they
-     *  appeared. Also makes an effort at identifying and handling absolute
-     *  and relative links.
+     * Maintains an internal list of links to be displayed at the end of the
+     * text, with numeric indices to the original point in the text they
+     * appeared. Also makes an effort at identifying and handling absolute
+     * and relative links.
      *
-     *  @param string $link URL of the link
-     *  @param string $display Part of the text to associate number with
-     *  @access private
-     *  @return string
+     * @param  string $link    URL of the link
+     * @param  string $display Part of the text to associate number with
+     * @return string
      */
-    private function _build_link_list( $link, $display, $link_override = null)
+    protected function _build_link_list($link, $display, $link_override = null)
     {
         $link_method = ($link_override) ? $link_override : $this->_options['do_links'];
         if ($link_method == 'none')
@@ -500,6 +465,7 @@ class Html2Text
         if (preg_match('!^(javascript:|mailto:|#)!i', $link)) {
             return $display;
         }
+
         if (preg_match('!^([a-z][a-z0-9.+-]+:)!i', $link)) {
             $url = $link;
         } else {
@@ -526,12 +492,11 @@ class Html2Text
     }
 
     /**
-     *  Helper function for PRE body conversion.
+     * Helper function for PRE body conversion.
      *
-     *  @param string HTML content
-     *  @access private
+     * @param string HTML content
      */
-    private function _convert_pre(&$text)
+    protected function _convert_pre(&$text)
     {
         // get the content of PRE element
         while (preg_match('/<pre[^>]*>(.*)<\/pre>/ismU', $text, $matches)) {
@@ -544,6 +509,7 @@ class Html2Text
             // convert the content
             $this->pre_content = sprintf('<div><br>%s<br></div>',
                 preg_replace($this->pre_search, $this->pre_replace, $this->pre_content));
+
             // replace the content (use callback because content can contain $0 variable)
             $text = preg_replace_callback('/<pre[^>]*>.*<\/pre>/ismU',
                 array($this, '_preg_pre_callback'), $text, 1);
@@ -554,12 +520,11 @@ class Html2Text
     }
 
     /**
-     *  Helper function for BLOCKQUOTE body conversion.
+     * Helper function for BLOCKQUOTE body conversion.
      *
-     *  @param string HTML content
-     *  @access private
+     * @param string HTML content
      */
-    private function _convert_blockquotes(&$text)
+    protected function _convert_blockquotes(&$text)
     {
         if (preg_match_all('/<\/*blockquote[^>]*>/i', $text, $matches, PREG_OFFSET_CAPTURE)) {
             $start = 0;
@@ -609,12 +574,12 @@ class Html2Text
     }
 
     /**
-     *  Callback function for preg_replace_callback use.
+     * Callback function for preg_replace_callback use.
      *
-     *  @param  array PREG matches
-     *  @return string
+     * @param  array PREG matches
+     * @return string
      */
-    private function _preg_callback($matches)
+    protected function _preg_callback($matches)
     {
         switch (strtolower($matches[1])) {
         case 'b':
@@ -638,12 +603,12 @@ class Html2Text
     }
 
     /**
-     *  Callback function for preg_replace_callback use in PRE content handler.
+     * Callback function for preg_replace_callback use in PRE content handler.
      *
-     *  @param  array PREG matches
-     *  @return string
+     * @param  array PREG matches
+     * @return string
      */
-    private function _preg_pre_callback($matches)
+    protected function _preg_pre_callback($matches)
     {
         return $this->pre_content;
     }
