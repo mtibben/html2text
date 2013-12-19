@@ -304,11 +304,12 @@ class Html2Text
      */
     public function set_html( $source, $from_file = false )
     {
-        if ( $from_file && file_exists($source) ) {
+        if ( $from_file && is_file($source) && is_readable($source) ) {
             $this->html = file_get_contents($source);
-        } else
+        } else {
             $this->html = $source;
-
+        }
+            
         $this->_converted = false;
     }
 
@@ -564,6 +565,9 @@ class Html2Text
         if (preg_match_all('/<\/*blockquote[^>]*>/i', $text, $matches, PREG_OFFSET_CAPTURE)) {
             $level = 0;
             $diff = 0;
+            $start = 0;
+            $taglen = 0;
+            
             foreach ($matches[0] as $m) {
                 if ($m[0][0] == '<' && $m[0][1] == '/') {
                     $level--;
@@ -625,7 +629,7 @@ class Html2Text
         case 'a':
             // override the link method
             $link_override = null;
-            if (preg_match("/_html2text_link_(\w+)/", $matches[4], $link_override_match)) {
+            if (preg_match('/_html2text_link_(\w+)/', $matches[4], $link_override_match)) {
                 $link_override = $link_override_match[1];
             }
             // Remove spaces in URL (#1487805)
