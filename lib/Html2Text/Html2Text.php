@@ -561,6 +561,8 @@ class Html2Text
      */
     private function _convert_blockquotes(&$text)
     {
+        $start = 0;
+        $taglen = 0;
         if (preg_match_all('/<\/*blockquote[^>]*>/i', $text, $matches, PREG_OFFSET_CAPTURE)) {
             $level = 0;
             $diff = 0;
@@ -625,7 +627,7 @@ class Html2Text
         case 'a':
             // override the link method
             $link_override = null;
-            if (preg_match("/_html2text_link_(\w+)/", $matches[4], $link_override_match)) {
+            if (preg_match('/_html2text_link_(\w+)/', $matches[4], $link_override_match)) {
                 $link_override = $link_override_match[1];
             }
             // Remove spaces in URL (#1487805)
