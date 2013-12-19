@@ -561,9 +561,9 @@ class Html2Text
      */
     private function _convert_blockquotes(&$text)
     {
-        $start = 0;
-        $taglen = 0;
         if (preg_match_all('/<\/*blockquote[^>]*>/i', $text, $matches, PREG_OFFSET_CAPTURE)) {
+            $start = 0;
+            $taglen = 0;
             $level = 0;
             $diff = 0;
             foreach ($matches[0] as $m) {
