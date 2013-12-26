@@ -304,11 +304,12 @@ class Html2Text
      */
     public function set_html( $source, $from_file = false )
     {
-        if ( $from_file && file_exists($source) ) {
+        if ( $from_file && is_file($source) && is_readable($source) ) {
             $this->html = file_get_contents($source);
-        } else
+        } else {
             $this->html = $source;
-
+        }
+            
         $this->_converted = false;
     }
 
@@ -566,6 +567,9 @@ class Html2Text
             $taglen = 0;
             $level = 0;
             $diff = 0;
+            $start = 0;
+            $taglen = 0;
+            
             foreach ($matches[0] as $m) {
                 if ($m[0][0] == '<' && $m[0][1] == '/') {
                     $level--;
