@@ -370,6 +370,24 @@ class Html2Text
     }
 
     /**
+     * Add custom pattern for search and replacement for this
+     * @param array $rules = [
+     *      "pattern_1" => "replacement_for_pattern_1",
+     *      "pattern_2" => "replacement_for_pattern_2",
+     * ]
+     */
+    public function add_ent_search_and_replace(array $rules = array())
+    {
+        $this->ent_search = array_merge(
+            $this->ent_search, array_keys($rules)
+        );
+
+        $this->ent_replace = array_merge(
+            $this->ent_replace, array_values($rules)
+        );
+    }
+
+    /**
      * Workhorse function that does actual conversion (calls _converter() method).
      */
     protected function _convert()
