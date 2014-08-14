@@ -68,13 +68,9 @@ class Html2Text
         '/<br[^>]*>/i',                          // <br>
         '/<i[^>]*>(.*?)<\/i>/i',                 // <i>
         '/<em[^>]*>(.*?)<\/em>/i',               // <em>
-        '/(<ul[^>]*>|<\/ul>)/i',                 // <ul> and </ul>
-        '/(<ol[^>]*>|<\/ol>)/i',                 // <ol> and </ol>
         '/(<dl[^>]*>|<\/dl>)/i',                 // <dl> and </dl>
-        '/<li[^>]*>(.*?)<\/li>/i',               // <li> and </li>
         '/<dd[^>]*>(.*?)<\/dd>/i',               // <dd> and </dd>
         '/<dt[^>]*>(.*?)<\/dt>/i',               // <dt> and </dt>
-        '/<li[^>]*>/i',                          // <li>
         '/<hr[^>]*>/i',                          // <hr>
         '/<div[^>]*>/i',                         // <div>
         '/(<table[^>]*>|<\/table>)/i',           // <table> and </table>
@@ -99,13 +95,9 @@ class Html2Text
         "\n",                                   // <br>
         '_\\1_',                                // <i>
         '_\\1_',                                // <em>
-        "\n\n",                                 // <ul> and </ul>
-        "\n\n",                                 // <ol> and </ol>
         "\n\n",                                 // <dl> and </dl>
-        "\t* \\1\n",                            // <li> and </li>
         " \\1\n",                               // <dd> and </dd>
         "\t* \\1",                              // <dt> and </dt>
-        "\n\t* ",                               // <li>
         "\n-------------------------\n",        // <hr>
         "<div>\n",                              // <div>
         "\n\n",                                 // <table> and </table>
@@ -176,6 +168,8 @@ class Html2Text
         '/<(b)( [^>]*)?>(.*?)<\/b>/i',                           // <b>
         '/<(strong)( [^>]*)?>(.*?)<\/strong>/i',                 // <strong>
         '/<(th)( [^>]*)?>(.*?)<\/th>/i',                         // <th> and </th>
+        '/<(ul)( [^>]*)?>(.*?)<\/ul>/i',                         // <ul>
+        '/<(ol)( [^>]*)?>(.*?)<\/ol>/i',                         // <ol>
     );
 
     /**
@@ -618,6 +612,19 @@ class Html2Text
                 $url = str_replace(' ', '', $matches[3]);
 
                 return $this->_build_link_list($url, $matches[5], $link_override);
+            case 'ul':
+                $items = preg_replace('/<li[^>]*>(.*?)<\/li>/i', "\t* \\1\n", $matches[3]);
+                $items = preg_replace('/<li[^>]*>/i', "\t* ", $items);
+                return "\n\n" . $items . "\n\n";
+            case 'ol':
+                $i = 1;
+                $items = preg_replace_callback('/<li[^>]*>(.*?)<\/li>/i', function($m) use (&$i) {
+                        return "\t" . $i++ . '. ' . $m[1] . "\n";
+                    }, $matches[3]);
+                $items = preg_replace_callback('/<li[^>]*>/i', function() use (&$i) {
+                        return "\t" . $i++ . '. ';
+                    }, $items);
+                return "\n\n" . $items . "\n\n";
         }
         return '';
     }
