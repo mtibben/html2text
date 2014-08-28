@@ -426,7 +426,7 @@ class Html2Text
         $text = preg_replace($this->ent_search, $this->ent_replace, $text);
 
         // Replace known html entities
-	// Facing encoding issue with accented characters, hence forcing to utf-8 in order to maintain the support Internalization.(mostly replicable in PHP 5.3)
+        // Facing encoding issue with accented characters, hence forcing to utf-8 in order to maintain the support Internalization.(mostly replicable in PHP 5.3)
         $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
 
         // Remove unknown/unhandled entities (this cannot be done in search-and-replace block)
@@ -666,7 +666,7 @@ class Html2Text
      */
     private function _strtoupper($str)
     {
-	// Facing encoding issue with accented characters, hence forcing to utf-8 in order to maintain the support Internalization.(mostly replicable in PHP 5.3)
+        // Facing encoding issue with accented characters, hence forcing to utf-8 in order to maintain the support Internalization.(mostly replicable in PHP 5.3)
         $str = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
 
         if (function_exists('mb_strtoupper'))
