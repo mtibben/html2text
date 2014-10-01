@@ -215,6 +215,13 @@ class Html2Text
     protected $pre_content = '';
 
     /**
+     * The regex that determines whether a link needs our base_url applied or not.
+     *
+     * @type string
+     */
+    protected $link_protocol_regex = '!^([a-z][a-z0-9.+-]+:)!i';
+
+    /**
      * Contains a list of HTML tags to allow in the resulting text.
      *
      * @type string
@@ -476,7 +483,7 @@ class Html2Text
             return $display;
         }
 
-        if (preg_match('!^([a-z][a-z0-9.+-]+:)!i', $link)) {
+        if (preg_match($this->link_protocol_regex, $link)) {
             $url = $link;
         } else {
             $url = $this->url;
