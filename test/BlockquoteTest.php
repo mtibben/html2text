@@ -4,7 +4,7 @@ namespace Html2Text;
 
 class BlockquoteTest extends \PHPUnit_Framework_TestCase
 {
-    public function testPre()
+    public function testBlockquote()
     {
         $html =<<<'EOT'
 <p>Before</p>

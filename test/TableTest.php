@@ -4,7 +4,7 @@ namespace Html2Text;
 
 class TableTest extends \PHPUnit_Framework_TestCase
 {
-    public function testPre()
+    public function testTable()
     {
         $html =<<<'EOT'
 <table>
