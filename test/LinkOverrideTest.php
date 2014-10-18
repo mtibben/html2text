@@ -8,7 +8,6 @@ class LinkOverrideTest extends \PHPUnit_Framework_TestCase
 <a href="http://example.com" class="_html2text_link_nextline">Link text</a>
 EOT;
 
-
     public function testDoLinksNextline()
     {
         $expected_output =<<<EOT

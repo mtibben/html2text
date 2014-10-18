@@ -11,7 +11,6 @@ class DefinitionListTest extends \PHPUnit_Framework_TestCase
 </dl>
 EOT;
 
-
     public function testDefinitionList()
     {
         $expected_output =<<<EOT

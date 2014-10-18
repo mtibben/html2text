@@ -8,7 +8,6 @@ class LinkTest extends \PHPUnit_Framework_TestCase
 <a href="http://example.com">Link text</a>
 EOT;
 
-
     public function testDoLinksAfter()
     {
         $expected_output =<<<EOT
@@ -26,7 +25,6 @@ EOT;
         $this->assertEquals($expected_output, $output);
     }
 
-
     public function testDoLinksInline()
     {
         $expected_output =<<<EOT
@@ -38,7 +36,6 @@ EOT;
 
         $this->assertEquals($expected_output, $output);
     }
-
 
     public function testDoLinksNone()
     {

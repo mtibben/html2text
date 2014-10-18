@@ -8,7 +8,6 @@ class IgnoreSpanTest extends \PHPUnit_Framework_TestCase
 Outside<span class="_html2text_ignore">Inside</span>
 EOT;
 
-
     public function testIgnoreSpans()
     {
         $expected_output =<<<EOT
