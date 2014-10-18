@@ -17,11 +17,6 @@ class PrintTest extends \PHPUnit_Framework_TestCase
         $this->html->p();
     }
 
-    public function testPrint()
-    {
-        $this->html->printText();
-    }
-
     public function testPrint_text()
     {
         $this->html->print_text();

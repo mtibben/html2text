@@ -319,7 +319,7 @@ class Html2Text
     /**
      * @deprecated
      */
-    public function printText()
+    public function print_text()
     {
         print $this->getText();
     }
@@ -327,17 +327,9 @@ class Html2Text
     /**
      * @deprecated
      */
-    public function print_text()
-    {
-        return $this->printText();
-    }
-
-    /**
-     * @deprecated
-     */
     public function p()
     {
-        return $this->printText();
+        return $this->print_text();
     }
 
     /**
