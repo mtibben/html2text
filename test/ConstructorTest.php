@@ -8,10 +8,10 @@ class ConstructorTest extends \PHPUnit_Framework_TestCase
     {
         $html = 'Foo';
         $options = array('do_links' => 'none');
-        $html2text = new \Html2Text\Html2Text($html, $options);
+        $html2text = new Html2Text($html, $options);
         $this->assertEquals($html, $html2text->getText());
 
-        $html2text = new \Html2Text\Html2Text($html);
+        $html2text = new Html2Text($html);
         $this->assertEquals($html, $html2text->getText());
     }
 
@@ -20,7 +20,7 @@ class ConstructorTest extends \PHPUnit_Framework_TestCase
         $html = 'Foo';
         $options = array('do_links' => 'none');
 
-        $html2text = new \Html2Text\Html2Text($html, false, $options);
+        $html2text = new Html2Text($html, false, $options);
         $this->assertEquals($html, $html2text->getText());
     }
 
@@ -30,6 +30,6 @@ class ConstructorTest extends \PHPUnit_Framework_TestCase
         $options = array('do_links' => 'none');
 
         $this->setExpectedException('InvalidArgumentException');
-        $html2text = new \Html2Text\Html2Text($html, true, $options);
+        $html2text = new Html2Text($html, true, $options);
     }
 }

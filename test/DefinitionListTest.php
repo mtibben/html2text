@@ -19,7 +19,7 @@ EOT;
 
 EOT;
 
-        $html2text = new \Html2Text\Html2Text($this->input);
+        $html2text = new Html2Text($this->input);
         $output = $html2text->get_text();
 
         $this->assertEquals($expected_output, $output);
