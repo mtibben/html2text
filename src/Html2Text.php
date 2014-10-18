@@ -246,60 +246,60 @@ class Html2Text
      * @type array
      */
     protected $options = array(
-        // 'none'
-        // 'inline' (show links inline)
-        // 'nextline' (show links on the next line)
-        // 'table' (if a table of link URLs should be listed after the text.
-        'do_links' => 'inline',
-        //  Maximum width of the formatted text, in columns.
-        //  Set this value to 0 (or less) to ignore word wrapping
-        //  and not constrain text to a fixed-width column.
-        'width' => 70,
+        'do_links' => 'inline', // 'none'
+                                // 'inline' (show links inline)
+                                // 'nextline' (show links on the next line)
+                                // 'table' (if a table of link URLs should be listed after the text.
+
+        'width' => 70,          //  Maximum width of the formatted text, in columns.
+                                //  Set this value to 0 (or less) to ignore word wrapping
+                                //  and not constrain text to a fixed-width column.
     );
 
-    /**
-     * If the HTML source string (or file) is supplied, the class
-     * will instantiate with that source propagated, all that has
-     * to be done it to call getText().
-     *
-     * @param string  $source    HTML content
-     * @param boolean $fromFile Indicates $source is a file to pull content from
-     * @param array   $options   Set configuration options
-     */
-    public function __construct($source = '', $fromFile = false, $options = array())
+    private function legacyConstruct($html = '', $fromFile = false, array $options = array())
     {
+        $this->set_html($html, $fromFile);
         $this->options = array_merge($this->options, $options);
-
-        if (!empty($source)) {
-            $this->setHtml($source, $fromFile);
-        }
-
         $this->setBaseUrl();
     }
 
     /**
-     * Loads source HTML into memory, either from $source string or a file.
-     *
-     * @param string  $source    HTML content
-     * @param boolean $fromFile Indicates $source is a file to pull content from
+     * @param string $html    Source HTML
+     * @param array  $options Set configuration options
      */
-    public function setHtml($source, $fromFile = false)
+    public function __construct($html = '', $options = array())
     {
-        if ($fromFile && file_exists($source)) {
-            $this->html = file_get_contents($source);
-        } else {
-            $this->html = $source;
+        // for backwards compatibility
+        if (!is_array($options)) {
+            return call_user_func_array(array($this, 'legacyConstruct'), func_get_args());
         }
 
+        $this->html = $html;
+        $this->options = array_merge($this->options, $options);
+        $this->setBaseUrl();
+    }
+
+    /**
+     * Set the source HTML
+     *
+     * @param string $html HTML source content
+     */
+    public function setHtml($html)
+    {
+        $this->html = $html;
         $this->converted = false;
     }
 
     /**
      * @deprecated
      */
-    public function set_html($source, $fromFile = false)
+    public function set_html($html, $fromFile = false)
     {
-        return $this->setHtml($source, $fromFile);
+        if ($fromFile) {
+            throw new \InvalidArgumentException("Argument fromFile no longer supported");
+        }
+
+        return $this->setHtml($html);
     }
 
     /**
@@ -325,7 +325,7 @@ class Html2Text
     }
 
     /**
-     * Prints the text, converted from HTML.
+     * @deprecated
      */
     public function printText()
     {
