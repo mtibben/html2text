@@ -252,7 +252,6 @@ class Html2Text
     {
         $this->set_html($html, $fromFile);
         $this->options = array_merge($this->options, $options);
-        $this->setBaseUrl();
     }
 
     /**
@@ -261,6 +260,8 @@ class Html2Text
      */
     public function __construct($html = '', $options = array())
     {
+        $this->setDefaultBaseUrl();
+
         // for backwards compatibility
         if (!is_array($options)) {
             return call_user_func_array(array($this, 'legacyConstruct'), func_get_args());
@@ -268,7 +269,6 @@ class Html2Text
 
         $this->html = $html;
         $this->options = array_merge($this->options, $options);
-        $this->setBaseUrl();
     }
 
     /**
@@ -285,10 +285,10 @@ class Html2Text
     /**
      * @deprecated
      */
-    public function set_html($html, $fromFile = false)
+    public function set_html($html, $from_file = false)
     {
-        if ($fromFile) {
-            throw new \InvalidArgumentException("Argument fromFile no longer supported");
+        if ($from_file) {
+            throw new \InvalidArgumentException("Argument from_file no longer supported");
         }
 
         return $this->setHtml($html);
@@ -345,50 +345,42 @@ class Html2Text
      *
      * @param string $url
      */
-    public function setBaseUrl($url = '')
+    public function setBaseUrl($url)
     {
-        if (empty($url)) {
-            if (!empty($_SERVER['HTTP_HOST'])) {
-                $this->url = 'http://' . $_SERVER['HTTP_HOST'];
-            } else {
-                $this->url = '';
-            }
-        } else {
-            // Strip any trailing slashes for consistency (relative
-            // URLs may already start with a slash like "/file.html")
-            if (substr($url, -1) == '/') {
-                $url = substr($url, 0, -1);
-            }
-            $this->url = $url;
+        // Strip any trailing slashes for consistency (relative
+        // URLs may already start with a slash like "/file.html")
+        if (substr($url, -1) == '/') {
+            $url = substr($url, 0, -1);
+        }
+        $this->url = $url;
+    }
+
+    private function setDefaultBaseUrl() {
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            $this->url = 'http://' . $_SERVER['HTTP_HOST'];
         }
     }
 
     /**
      * @deprecated
      */
-    public function set_base_url($url = '')
+    public function set_base_url($url)
     {
         return $this->setBaseUrl($url);
     }
 
-    /**
-     * Workhorse function that does actual conversion (calls converter() method).
-     */
     protected function convert()
     {
-        // Variables used for building the link list
         $this->linkList = array();
 
         $text = trim(stripslashes($this->html));
 
-        // Convert HTML to TXT
         $this->converter($text);
 
-        // Add link list
-        if (!empty($this->linkList)) {
+        if ($this->linkList) {
             $text .= "\n\nLinks:\n------\n";
-            foreach ($this->linkList as $idx => $url) {
-                $text .= '[' . ($idx + 1) . '] ' . $url . "\n";
+            foreach ($this->linkList as $i => $url) {
+                $text .= '[' . ($i + 1) . '] ' . $url . "\n";
             }
         }
 
@@ -397,37 +389,14 @@ class Html2Text
         $this->converted = true;
     }
 
-    /**
-     * Workhorse function that does actual conversion.
-     *
-     * First performs custom tag replacement specified by $search and
-     * $replace arrays. Then strips any remaining HTML tags, reduces whitespace
-     * and newlines to a readable format, and word wraps the text to
-     * $this->options['width'] characters.
-     *
-     * @param string $text Reference to HTML content string
-     */
     protected function converter(&$text)
     {
-        // Convert <BLOCKQUOTE> (before PRE!)
         $this->convertBlockquotes($text);
-
-        // Convert <PRE>
         $this->convertPre($text);
-
-        // Run our defined tags search-and-replace
         $text = preg_replace($this->search, $this->replace, $text);
-
-        // Run our defined tags search-and-replace with callback
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
-
-        // Strip any other HTML tags
         $text = strip_tags($text);
-
-        // Run our defined entities/characters search-and-replace
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
-
-        // Replace known html entities
         $text = html_entity_decode($text, ENT_QUOTES, self::ENCODING);
 
         // Remove unknown/unhandled entities (this cannot be done in search-and-replace block)
@@ -437,16 +406,13 @@ class Html2Text
         // This properly handles situation of "&amp;quot;" in input string
         $text = str_replace('|+|amp|+|', '&', $text);
 
-        // Bring down number of empty lines to 2 max
+        // Normalise empty lines
         $text = preg_replace("/\n\s+\n/", "\n\n", $text);
         $text = preg_replace("/[\n]{3,}/", "\n\n", $text);
 
         // remove leading empty lines (can be produced by eg. P tag on the beginning)
         $text = ltrim($text, "\n");
 
-        // Wrap the text to a readable format
-        // for PHP versions >= 4.0.2. Default width is 75
-        // If width is 0 or less, don't wrap the text.
         if ($this->options['width'] > 0) {
             $text = wordwrap($text, $this->options['width']);
         }
@@ -501,11 +467,6 @@ class Html2Text
         }
     }
 
-    /**
-     * Helper function for PRE body conversion.
-     *
-     * @param string $text HTML content
-     */
     protected function convertPre(&$text)
     {
         // get the content of PRE element
@@ -646,9 +607,9 @@ class Html2Text
         $chunks = preg_split('/(<[^>]*>)/', $str, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
         // convert toupper only the text between HTML tags
-        foreach ($chunks as $idx => $chunk) {
+        foreach ($chunks as $i => $chunk) {
             if ($chunk[0] != '<') {
-                $chunks[$idx] = $this->strtoupper($chunk);
+                $chunks[$i] = $this->strtoupper($chunk);
             }
         }
 
