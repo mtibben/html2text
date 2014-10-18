@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__.'/../lib/Html2Text/Html2Text.php';
+namespace Html2Text;
 
-class DefinitionListTest extends PHPUnit_Framework_TestCase
+class DefinitionListTest extends \PHPUnit_Framework_TestCase
 {
     public $input =<<< EOT
 <dl>

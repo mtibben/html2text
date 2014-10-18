@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__.'/../lib/Html2Text/Html2Text.php';
+namespace Html2Text;
 
-class LinkTest extends PHPUnit_Framework_TestCase
+class LinkTest extends \PHPUnit_Framework_TestCase
 {
     public $input =<<< EOT
 <a href="http://example.com">Link text</a>
@@ -20,7 +20,7 @@ Links:
 
 EOT;
 
-        $html2text = new \Html2Text\Html2Text($this->input, false, array('do_links' => 'table'));
+        $html2text = new Html2Text($this->input, false, array('do_links' => 'table'));
         $output = $html2text->get_text();
 
         $this->assertEquals($expected_output, $output);
@@ -33,7 +33,7 @@ EOT;
 Link text [http://example.com]
 EOT;
 
-        $html2text = new \Html2Text\Html2Text($this->input, false, array('do_links' => 'inline'));
+        $html2text = new Html2Text($this->input, false, array('do_links' => 'inline'));
         $output = $html2text->get_text();
 
         $this->assertEquals($expected_output, $output);
@@ -46,7 +46,7 @@ EOT;
 Link text
 EOT;
 
-        $html2text = new \Html2Text\Html2Text($this->input, false, array('do_links' => 'none'));
+        $html2text = new Html2Text($this->input, false, array('do_links' => 'none'));
         $output = $html2text->get_text();
 
         $this->assertEquals($output, $expected_output);
@@ -59,7 +59,7 @@ Link text
 [http://example.com]
 EOT;
 
-        $html2text = new \Html2Text\Html2Text($this->input, false, array('do_links' => 'nextline'));
+        $html2text = new Html2Text($this->input, false, array('do_links' => 'nextline'));
         $output = $html2text->get_text();
 
         $this->assertEquals($expected_output, $output);
