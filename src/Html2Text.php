@@ -21,6 +21,8 @@ namespace Html2Text;
 
 class Html2Text
 {
+    const ENCODING = 'UTF-8';
+
     /**
      * Contains the HTML content to convert.
      *
@@ -455,7 +457,7 @@ class Html2Text
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
 
         // Replace known html entities
-        $text = html_entity_decode($text, ENT_QUOTES);
+        $text = html_entity_decode($text, ENT_QUOTES, self::ENCODING);
 
         // Remove unknown/unhandled entities (this cannot be done in search-and-replace block)
         $text = preg_replace('/&([a-zA-Z0-9]{2,6}|#[0-9]{2,4});/', '', $text);
@@ -684,22 +686,21 @@ class Html2Text
 
     /**
      * Strtoupper multibyte wrapper function with HTML entities handling.
-     * Forces mb_strtoupper-call to UTF-8.
      *
      * @param  string $str Text to convert
      * @return string Converted text
      */
     private function strtoupper($str)
     {
-        $str = html_entity_decode($str, ENT_COMPAT);
+        $str = html_entity_decode($str, ENT_COMPAT, self::ENCODING);
 
         if (function_exists('mb_strtoupper')) {
-            $str = mb_strtoupper($str, 'UTF-8');
+            $str = mb_strtoupper($str, self::ENCODING);
         } else {
             $str = strtoupper($str);
         }
 
-        $str = htmlspecialchars($str, ENT_COMPAT);
+        $str = htmlspecialchars($str, ENT_COMPAT, self::ENCODING);
 
         return $str;
     }
