@@ -210,14 +210,6 @@ class Html2Text
     protected $preContent = '';
 
     /**
-     * Contains a list of HTML tags to allow in the resulting text.
-     *
-     * @type string
-     * @see setAllowedTags()
-     */
-    protected $allowedTags = '';
-
-    /**
      * Contains the base URL that relative links should resolve to.
      *
      * @type string
@@ -349,27 +341,6 @@ class Html2Text
     }
 
     /**
-     * Sets the allowed HTML tags to pass through to the resulting text.
-     *
-     * Tags should be in the form "<p>", with no corresponding closing tag.
-     * @param string $allowedTags
-     */
-    public function setAllowedTags($allowedTags = '')
-    {
-        if (!empty($allowedTags)) {
-            $this->allowedTags = $allowedTags;
-        }
-    }
-
-    /**
-     * @deprecated
-     */
-    public function set_allowed_tags($allowedTags = '')
-    {
-        return $this->setAllowedTags($allowedTags);
-    }
-
-    /**
      * Sets a base URL to handle relative links.
      *
      * @param string $url
@@ -451,7 +422,7 @@ class Html2Text
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
 
         // Strip any other HTML tags
-        $text = strip_tags($text, $this->allowedTags);
+        $text = strip_tags($text);
 
         // Run our defined entities/characters search-and-replace
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
