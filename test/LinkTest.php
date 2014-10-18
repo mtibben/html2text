@@ -4,13 +4,11 @@ namespace Html2Text;
 
 class LinkTest extends \PHPUnit_Framework_TestCase
 {
-    public $input =<<< EOT
-<a href="http://example.com">Link text</a>
-EOT;
+    const TEST_HTML = '<a href="http://example.com">Link text</a>';
 
     public function testDoLinksAfter()
     {
-        $expected_output =<<<EOT
+        $expected =<<<EOT
 Link text [1]
 
 Links:
@@ -19,46 +17,69 @@ Links:
 
 EOT;
 
-        $html2text = new Html2Text($this->input, false, array('do_links' => 'table'));
-        $output = $html2text->get_text();
+        $html2text = new Html2Text(self::TEST_HTML, array('do_links' => 'table'));
+        $output = $html2text->getText();
 
-        $this->assertEquals($expected_output, $output);
+        $this->assertEquals($expected, $output);
     }
 
     public function testDoLinksInline()
     {
-        $expected_output =<<<EOT
+        $expected =<<<EOT
 Link text [http://example.com]
 EOT;
 
-        $html2text = new Html2Text($this->input, false, array('do_links' => 'inline'));
-        $output = $html2text->get_text();
+        $html2text = new Html2Text(self::TEST_HTML, array('do_links' => 'inline'));
+        $output = $html2text->getText();
 
-        $this->assertEquals($expected_output, $output);
+        $this->assertEquals($expected, $output);
     }
 
     public function testDoLinksNone()
     {
-        $expected_output =<<<EOT
+        $expected =<<<EOT
 Link text
 EOT;
 
-        $html2text = new Html2Text($this->input, false, array('do_links' => 'none'));
-        $output = $html2text->get_text();
+        $html2text = new Html2Text(self::TEST_HTML, array('do_links' => 'none'));
+        $output = $html2text->getText();
 
-        $this->assertEquals($output, $expected_output);
+        $this->assertEquals($output, $expected);
     }
 
     public function testDoLinksNextline()
     {
-        $expected_output =<<<EOT
+        $expected =<<<EOT
 Link text
 [http://example.com]
 EOT;
 
-        $html2text = new Html2Text($this->input, false, array('do_links' => 'nextline'));
-        $output = $html2text->get_text();
+        $html2text = new Html2Text(self::TEST_HTML, array('do_links' => 'nextline'));
+        $output = $html2text->getText();
 
-        $this->assertEquals($expected_output, $output);
+        $this->assertEquals($expected, $output);
+    }
+
+    public function testDoLinksInHtml()
+    {
+        $html =<<<EOT
+<p><a href="http://example.com" class="_html2text_link_none">Link text</a></p>
+<p><a href="http://example.com" class="_html2text_link_inline">Link text</a></p>
+<p><a href="http://example.com" class="_html2text_link_nextline">Link text</a></p>
+EOT;
+
+        $expected =<<<EOT
+Link text 
+
+Link text [http://example.com] 
+
+Link text
+[http://example.com]
+EOT;
+
+        $html2text = new Html2Text($html);
+        $output = $html2text->getText();
+
+        $this->assertEquals($expected, $output);
     }
 }

@@ -214,7 +214,7 @@ class Html2Text
      *
      * @type string
      */
-    protected $url;
+    protected $url = '';
 
     /**
      * Indicates whether content in the $html variable has been converted yet.
