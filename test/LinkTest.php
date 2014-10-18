@@ -82,4 +82,26 @@ EOT;
 
         $this->assertEquals($expected, $output);
     }
+
+    public function testBaseUrl()
+    {
+        $html = '<a href="/relative">Link text</a>';
+        $expected = 'Link text [http://example.com/relative]';
+
+        $html2text = new Html2Text($html, array('do_links' => 'inline'));
+        $html2text->setBaseUrl('http://example.com');
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
+
+    public function testBaseUrlWithPlaceholder()
+    {
+        $html = '<a href="/relative">Link text</a>';
+        $expected = 'Link text [%baseurl%/relative]';
+
+        $html2text = new Html2Text($html, array('do_links' => 'inline'));
+        $html2text->setBaseUrl('%baseurl%');
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
 }

@@ -214,7 +214,7 @@ class Html2Text
      *
      * @type string
      */
-    protected $url = '';
+    protected $baseurl = '';
 
     /**
      * Indicates whether content in the $html variable has been converted yet.
@@ -260,8 +260,6 @@ class Html2Text
      */
     public function __construct($html = '', $options = array())
     {
-        $this->setDefaultBaseUrl();
-
         // for backwards compatibility
         if (!is_array($options)) {
             return call_user_func_array(array($this, 'legacyConstruct'), func_get_args());
@@ -335,30 +333,19 @@ class Html2Text
     /**
      * Sets a base URL to handle relative links.
      *
-     * @param string $url
+     * @param string $baseurl
      */
-    public function setBaseUrl($url)
+    public function setBaseUrl($baseurl)
     {
-        // Strip any trailing slashes for consistency (relative
-        // URLs may already start with a slash like "/file.html")
-        if (substr($url, -1) == '/') {
-            $url = substr($url, 0, -1);
-        }
-        $this->url = $url;
-    }
-
-    private function setDefaultBaseUrl() {
-        if (!empty($_SERVER['HTTP_HOST'])) {
-            $this->url = 'http://' . $_SERVER['HTTP_HOST'];
-        }
+        $this->baseurl = $baseurl;
     }
 
     /**
      * @deprecated
      */
-    public function set_base_url($url)
+    public function set_base_url($baseurl)
     {
-        return $this->setBaseUrl($url);
+        return $this->setBaseUrl($baseurl);
     }
 
     protected function convert()
@@ -438,11 +425,11 @@ class Html2Text
         if (preg_match('!^([a-z][a-z0-9.+-]+:)!i', $link)) {
             $url = $link;
         } else {
-            $url = $this->url;
+            $url = $this->baseurl;
             if (substr($link, 0, 1) != '/') {
                 $url .= '/';
             }
-            $url .= "$link";
+            $url .= $link;
         }
 
         if ($linkMethod == 'table') {
