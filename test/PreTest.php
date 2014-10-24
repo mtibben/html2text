@@ -22,9 +22,9 @@ EOT;
         $expected =<<<'EOT'
 Before 
 
-Foo bar baz
+Foo bar baz
 
-HTML symbols &
+HTML symbols &
 
 After
 EOT;

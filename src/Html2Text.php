@@ -118,19 +118,8 @@ class Html2Text
      * @see $entReplace
      */
     protected $entSearch = array(
-        '/&(nbsp|#160);/i',                              // Non-breaking space
-        '/&(quot|rdquo|ldquo|#8220|#8221|#147|#148);/i', // Double quotes
-        '/&(apos|rsquo|lsquo|#8216|#8217);/i',           // Single quotes
-        '/&gt;/i',                                       // Greater-than
-        '/&lt;/i',                                       // Less-than
-        '/&(copy|#169);/i',                              // Copyright
-        '/&(trade|#8482|#153);/i',                       // Trademark
-        '/&(reg|#174);/i',                               // Registered
-        '/&(mdash|#151|#8212);/i',                       // mdash
-        '/&(ndash|minus|#8211|#8722);/i',                // ndash
-        '/&(bull|#149|#8226);/i',                        // Bullet
-        '/&(pound|#163);/i',                             // Pound sign
-        '/&(euro|#8364);/i',                             // Euro sign
+        '/&#153;/i',                                     // TM symbol in win-1252
+        '/&#151;/i',                                     // m-dash in win-1252
         '/&(amp|#38);/i',                                // Ampersand: see converter()
         '/[ ]{2,}/',                                     // Runs of spaces, post-handling
     );
@@ -142,19 +131,8 @@ class Html2Text
      * @see $entSearch
      */
     protected $entReplace = array(
-        ' ',         // Non-breaking space
-        '"',         // Double quotes
-        "'",         // Single quotes
-        '>',
-        '<',
-        '(c)',
-        '(tm)',
-        '(R)',
-        '--',
-        '-',
-        '*',
-        '£',
-        'EUR',       // Euro sign. € ?
+        '™',         // TM symbol
+        '—',         // m-dash
         '|+|amp|+|', // Ampersand: see converter()
         ' ',         // Runs of spaces, post-handling
     );
