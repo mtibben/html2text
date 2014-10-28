@@ -617,12 +617,15 @@ class Html2Text
                 $items = preg_replace('/<li[^>]*>/i', "\t* ", $items);
                 return "\n\n" . $items . "\n\n";
             case 'ol':
+                $totalCount = preg_match_all('/<li[^>]*>(.*?)<\/li>/i', $matches[3]);
+                $digits = floor($totalCount / 10) + 1;
+
                 $i = 1;
-                $items = preg_replace_callback('/<li[^>]*>(.*?)<\/li>/i', function($m) use (&$i) {
-                        return "\t" . $i++ . '. ' . $m[1] . "\n";
+                $items = preg_replace_callback('/<li[^>]*>(.*?)<\/li>/i', function($m) use (&$i, $digits) {
+                        return sprintf("\t%".$digits."d. %s\n", $i++, $m[1]);
                     }, $matches[3]);
-                $items = preg_replace_callback('/<li[^>]*>/i', function() use (&$i) {
-                        return "\t" . $i++ . '. ';
+                $items = preg_replace_callback('/<li[^>]*>/i', function() use (&$i, $digits) {
+                        return sprintf("\t%".$digits."d. ", $i++);
                     }, $items);
                 return "\n\n" . $items . "\n\n";
         }
