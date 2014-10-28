@@ -116,7 +116,7 @@ class Html2Text
     protected $ent_search = array(
         '/&(nbsp|#160);/i',                      // Non-breaking space
         '/&(quot|rdquo|ldquo|#8220|#8221|#147|#148);/i',
-                                                 // Double quotes
+        // Double quotes
         '/&(apos|rsquo|lsquo|#8216|#8217);/i',   // Single quotes
         '/&gt;/i',                               // Greater-than
         '/&lt;/i',                               // Less-than
@@ -130,6 +130,7 @@ class Html2Text
         '/&(euro|#8364);/i',                     // Euro sign
         '/&(amp|#38);/i',                        // Ampersand: see _converter()
         '/[ ]{2,}/',                             // Runs of spaces, post-handling
+        '/&nebsp;/i',                            // Never-Ever-breaking space (dirty hack)
     );
 
     /**
@@ -154,6 +155,7 @@ class Html2Text
         'EUR',                                  // Euro sign. € ?
         '|+|amp|+|',                            // Ampersand: see _converter()
         ' ',                                    // Runs of spaces, post-handling
+        ' ',                                    // Never-Ever-breaking space (dirty hack)
     );
 
     /**
@@ -613,20 +615,30 @@ class Html2Text
 
                 return $this->_build_link_list($url, $matches[5], $link_override);
             case 'ul':
-                $items = preg_replace('/<li[^>]*>(.*?)<\/li>/i', "\t* \\1\n", $matches[3]);
+                // prepare item padding
+                $itemWidth = $this->_options['width'] - (4 + 2);  // tab(4) + '* '
+                $itemPadding = "\t" . str_repeat("&nebsp;", 2);
+                $items = preg_replace_callback('/<li[^>]*>(.*?)<\/li>/i', function($m) use ($itemPadding, $itemWidth) {
+                        $item = implode("\n".$itemPadding, explode("\n", wordwrap($m[1], $itemWidth, "\n")));
+                        return "\t* " . $item . "\n";
+                    }, $matches[3]);
                 $items = preg_replace('/<li[^>]*>/i', "\t* ", $items);
                 return "\n\n" . $items . "\n\n";
             case 'ol':
                 $totalCount = preg_match_all('/<li[^>]*>(.*?)<\/li>/i', $matches[3]);
                 $digits = floor($totalCount / 10) + 1;
-
+                // prepare item padding
+                $itemWidth = $this->_options['width'] - (4 + $digits + 2);  // tab(4) + digit + '. '
+                $itemPadding = "\t" . str_repeat('&nebsp;', $digits + 2);   // little dirty hack
                 $i = 1;
-                $items = preg_replace_callback('/<li[^>]*>(.*?)<\/li>/i', function($m) use (&$i, $digits) {
-                        return sprintf("\t%".$digits."d. %s\n", $i++, $m[1]);
+                $items = preg_replace_callback('/<li[^>]*>(.*?)<\/li>/i', function($m) use (&$i, $digits, $itemWidth, $itemPadding) {
+                        $item = implode("\n".$itemPadding, explode("\n", wordwrap($m[1], $itemWidth, "\n")));
+                        return sprintf("\t%".$digits."d. %s\n", $i++, $item);
                     }, $matches[3]);
                 $items = preg_replace_callback('/<li[^>]*>/i', function() use (&$i, $digits) {
                         return sprintf("\t%".$digits."d. ", $i++);
                     }, $items);
+
                 return "\n\n" . $items . "\n\n";
         }
         return '';
