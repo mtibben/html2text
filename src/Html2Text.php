@@ -355,7 +355,7 @@ class Html2Text
         $text = strip_tags($text);
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
         $text = preg_replace("/(&nbsp;){2,}|(&emsp;){2,}|(&ensp;){2,}|(&thinsp;){2,}/", "\t", $text); // Replace more than two blank spaces with a tab.
-        $text = preg_replace("/(&nbsp;){1}|(&emsp;){1}|(&ensp;){1}|(&thinsp;){1}/", " ", $text); // Remove any leftover single spaces and replace with a space
+		$text = preg_replace("/(&nbsp;){1}|(&emsp;){1}|(&ensp;){1}|(&thinsp;){1}/", " ", $text); // Remove any leftover single spaces and replace with a space
         $text = html_entity_decode($text, ENT_QUOTES, self::ENCODING);
 
         // Remove unknown/unhandled entities (this cannot be done in search-and-replace block)
