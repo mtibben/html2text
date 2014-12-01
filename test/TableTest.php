@@ -2,8 +2,6 @@
 
 namespace Html2Text;
 
-require_once("C:\\Stash\\Html2TexT_PR\\html2text\\src\\Html2Text.php");
-
 class TableTest extends \PHPUnit_Framework_TestCase
 {
     public function testTable()
