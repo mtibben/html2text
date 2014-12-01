@@ -217,13 +217,13 @@ class Html2Text
      */
     protected $options = array(
         'do_links' => 'inline', // 'none'
-                                // 'inline' (show links inline)
-                                // 'nextline' (show links on the next line)
-                                // 'table' (if a table of link URLs should be listed after the text.
+		// 'inline' (show links inline)
+		// 'nextline' (show links on the next line)
+		// 'table' (if a table of link URLs should be listed after the text.
 
         'width' => 70,          //  Maximum width of the formatted text, in columns.
-                                //  Set this value to 0 (or less) to ignore word wrapping
-                                //  and not constrain text to a fixed-width column.
+		//  Set this value to 0 (or less) to ignore word wrapping
+		//  and not constrain text to a fixed-width column.
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
