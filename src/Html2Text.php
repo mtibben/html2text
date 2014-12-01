@@ -55,28 +55,29 @@ class Html2Text
      * @see $replace
      */
     protected $search = array(
-        "/\r/",                                           // Non-legal carriage return
-        "/[\n\t]+/",                                      // Newlines and tabs
-        '/<head[^>]*>.*?<\/head>/i',                      // <head>
-        '/<script[^>]*>.*?<\/script>/i',                  // <script>s -- which strip_tags supposedly has problems with
-        '/<style[^>]*>.*?<\/style>/i',                    // <style>s -- which strip_tags supposedly has problems with
-        '/<p[^>]*>/i',                                    // <P>
-        '/<br[^>]*>/i',                                   // <br>
-        '/<i[^>]*>(.*?)<\/i>/i',                          // <i>
-        '/<em[^>]*>(.*?)<\/em>/i',                        // <em>
-        '/(<ul[^>]*>|<\/ul>)/i',                          // <ul> and </ul>
-        '/(<ol[^>]*>|<\/ol>)/i',                          // <ol> and </ol>
-        '/(<dl[^>]*>|<\/dl>)/i',                          // <dl> and </dl>
-        '/<li[^>]*>(.*?)<\/li>/i',                        // <li> and </li>
-        '/<dd[^>]*>(.*?)<\/dd>/i',                        // <dd> and </dd>
-        '/<dt[^>]*>(.*?)<\/dt>/i',                        // <dt> and </dt>
-        '/<li[^>]*>/i',                                   // <li>
-        '/<hr[^>]*>/i',                                   // <hr>
-        '/<div[^>]*>/i',                                  // <div>
-        '/(<table[^>]*>|<\/table>)/i',                    // <table> and </table>
-        '/(<tr[^>]*>|<\/tr>)/i',                          // <tr> and </tr>
-        '/<td[^>]*>(.*?)<\/td>/i',                        // <td> and </td>
-        '/<span class="_html2text_ignore">.+?<\/span>/i', // <span class="_html2text_ignore">...</span>
+        "/\r/",                                                     // Non-legal carriage return
+        "/[\n\t]+/",                                                // Newlines and tabs
+        '/<head[^>]*>.*?<\/head>/i',                                // <head>
+        '/<script[^>]*>.*?<\/script>/i',                            // <script>s -- which strip_tags supposedly has problems with
+        '/<style[^>]*>.*?<\/style>/i',                              // <style>s -- which strip_tags supposedly has problems with
+        '/<p[^>]*>/i',                                              // <P>
+        '/<br[^>]*>/i',                                             // <br>
+        '/<i[^>]*>(.*?)<\/i>/i',                                    // <i>
+        '/<em[^>]*>(.*?)<\/em>/i',                                  // <em>
+        '/(<ul[^>]*>|<\/ul>)/i',                                    // <ul> and </ul>
+        '/(<ol[^>]*>|<\/ol>)/i',                                    // <ol> and </ol>
+        '/(<dl[^>]*>|<\/dl>)/i',                                    // <dl> and </dl>
+        '/<li[^>]*>(.*?)<\/li>/i',                                  // <li> and </li>
+        '/<dd[^>]*>(.*?)<\/dd>/i',                                  // <dd> and </dd>
+        '/<dt[^>]*>(.*?)<\/dt>/i',                                  // <dt> and </dt>
+        '/<li[^>]*>/i',                                             // <li>
+        '/<hr[^>]*>/i',                                             // <hr>
+        '/<div[^>]*>/i',                                            // <div>
+        '/(<table[^>]*>|<\/table>)/i',                              // <table> and </table>
+        '/(<tr[^>]*>|<\/tr>)/i',                                    // <tr> and </tr>
+        '/<td[^>]*>(?:&nbsp;|&emsp;|&ensp;|&thinsp;){2,}<\/td>/i',  // <td> containing blank spaces </td>
+        '/<td[^>]*>(.*?)<\/td>/i',                                  // <td> and </td>
+        '/<span class="_html2text_ignore">.+?<\/span>/i',           // <span class="_html2text_ignore">...</span>
     );
 
     /**
@@ -106,6 +107,7 @@ class Html2Text
         "<div>\n",                       // <div>
         "\n\n",                          // <table> and </table>
         "\n",                            // <tr> and </tr>
+        "",                              // <td> containing blank spaces </td>
         "\t\t\\1\n",                     // <td> and </td>
         ""                               // <span class="_html2text_ignore">...</span>
     );
@@ -354,6 +356,8 @@ class Html2Text
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
         $text = strip_tags($text);
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
+        $text = preg_replace("/(&nbsp;){2,}|(&emsp;){2,}|(&ensp;){2,}|(&thinsp;){2,}/", "\t", $text); // Replace more than two blank spaces with a tab.
+	$text = preg_replace("/(&nbsp;){1}|(&emsp;){1}|(&ensp;){1}|(&thinsp;){1}/", " ", $text); // Remove any leftover single spaces and replace with a space
         $text = html_entity_decode($text, ENT_QUOTES, self::ENCODING);
 
         // Remove unknown/unhandled entities (this cannot be done in search-and-replace block)
