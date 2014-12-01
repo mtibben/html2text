@@ -35,6 +35,39 @@ EOT;
         $this->assertEquals($expected, $html2text->getText());
     }
 
+    public function testTableDeeper()
+    {
+        $html =<<<'EOT'
+<table>
+  <tr>
+    <th>Heading 1</th>
+    <td>Data 1a</td>
+    <td>Data 1b</td>
+  </tr>
+  <tr>
+    <th>Heading 2</th>
+    <td>Data 2a</td>
+    <td>Data 2b</td>
+  </tr>
+</table>
+EOT;
+
+        $expected =<<<'EOT'
+ 		HEADING 1
+ 		Data 1a
+ 		Data 1b
+
+ 		HEADING 2
+ 		Data 2a
+ 		Data 2b
+
+
+EOT;
+
+        $html2text = new Html2Text($html);
+        $this->assertEquals($expected, $html2text->getText());
+    }
+
     public function testTableWithSpaces()
     {
         $html =<<<'EOT'
