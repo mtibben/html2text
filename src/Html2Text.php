@@ -217,13 +217,13 @@ class Html2Text
      */
     protected $options = array(
         'do_links' => 'inline', // 'none'
-                                // 'inline' (show links inline)
-                                // 'nextline' (show links on the next line)
-                                // 'table' (if a table of link URLs should be listed after the text.
+        // 'inline' (show links inline)
+        // 'nextline' (show links on the next line)
+        // 'table' (if a table of link URLs should be listed after the text.
 
         'width' => 70,          //  Maximum width of the formatted text, in columns.
-                                //  Set this value to 0 (or less) to ignore word wrapping
-                                //  and not constrain text to a fixed-width column.
+        //  Set this value to 0 (or less) to ignore word wrapping
+        //  and not constrain text to a fixed-width column.
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -355,6 +355,7 @@ class Html2Text
         $text = strip_tags($text);
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
         $text = preg_replace("/(&nbsp;){2,}|(&emsp;){2,}|(&ensp;){2,}|(&thinsp;){2,}/", "\t", $text); // Replace more than two blank spaces with a tab.
+        $text = preg_replace("/(&nbsp;){1}|(&emsp;){1}|(&ensp;){1}|(&thinsp;){1}/", " ", $text); // Remove any leftover single spaces and replace with a space
         $text = html_entity_decode($text, ENT_QUOTES, self::ENCODING);
 
         // Remove unknown/unhandled entities (this cannot be done in search-and-replace block)
