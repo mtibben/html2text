@@ -55,28 +55,29 @@ class Html2Text
      * @see $replace
      */
     protected $search = array(
-        "/\r/",                                           // Non-legal carriage return
-        "/[\n\t]+/",                                      // Newlines and tabs
-        '/<head[^>]*>.*?<\/head>/i',                      // <head>
-        '/<script[^>]*>.*?<\/script>/i',                  // <script>s -- which strip_tags supposedly has problems with
-        '/<style[^>]*>.*?<\/style>/i',                    // <style>s -- which strip_tags supposedly has problems with
-        '/<p[^>]*>/i',                                    // <P>
-        '/<br[^>]*>/i',                                   // <br>
-        '/<i[^>]*>(.*?)<\/i>/i',                          // <i>
-        '/<em[^>]*>(.*?)<\/em>/i',                        // <em>
-        '/(<ul[^>]*>|<\/ul>)/i',                          // <ul> and </ul>
-        '/(<ol[^>]*>|<\/ol>)/i',                          // <ol> and </ol>
-        '/(<dl[^>]*>|<\/dl>)/i',                          // <dl> and </dl>
-        '/<li[^>]*>(.*?)<\/li>/i',                        // <li> and </li>
-        '/<dd[^>]*>(.*?)<\/dd>/i',                        // <dd> and </dd>
-        '/<dt[^>]*>(.*?)<\/dt>/i',                        // <dt> and </dt>
-        '/<li[^>]*>/i',                                   // <li>
-        '/<hr[^>]*>/i',                                   // <hr>
-        '/<div[^>]*>/i',                                  // <div>
-        '/(<table[^>]*>|<\/table>)/i',                    // <table> and </table>
-        '/(<tr[^>]*>|<\/tr>)/i',                          // <tr> and </tr>
-        '/<td[^>]*>(.*?)<\/td>/i',                        // <td> and </td>
-        '/<span class="_html2text_ignore">.+?<\/span>/i', // <span class="_html2text_ignore">...</span>
+        "/\r/",                                                     // Non-legal carriage return
+        "/[\n\t]+/",                                                // Newlines and tabs
+        '/<head[^>]*>.*?<\/head>/i',                                // <head>
+        '/<script[^>]*>.*?<\/script>/i',                            // <script>s -- which strip_tags supposedly has problems with
+        '/<style[^>]*>.*?<\/style>/i',                              // <style>s -- which strip_tags supposedly has problems with
+        '/<p[^>]*>/i',                                              // <P>
+        '/<br[^>]*>/i',                                             // <br>
+        '/<i[^>]*>(.*?)<\/i>/i',                                    // <i>
+        '/<em[^>]*>(.*?)<\/em>/i',                                  // <em>
+        '/(<ul[^>]*>|<\/ul>)/i',                                    // <ul> and </ul>
+        '/(<ol[^>]*>|<\/ol>)/i',                                    // <ol> and </ol>
+        '/(<dl[^>]*>|<\/dl>)/i',                                    // <dl> and </dl>
+        '/<li[^>]*>(.*?)<\/li>/i',                                  // <li> and </li>
+        '/<dd[^>]*>(.*?)<\/dd>/i',                                  // <dd> and </dd>
+        '/<dt[^>]*>(.*?)<\/dt>/i',                                  // <dt> and </dt>
+        '/<li[^>]*>/i',                                             // <li>
+        '/<hr[^>]*>/i',                                             // <hr>
+        '/<div[^>]*>/i',                                            // <div>
+        '/(<table[^>]*>|<\/table>)/i',                              // <table> and </table>
+        '/(<tr[^>]*>|<\/tr>)/i',                                    // <tr> and </tr>
+        '/<td[^>]*>(?:&nbsp;|&emsp;|&ensp;|&thinsp;){2,}<\/td>/i',  // <td> containing blank spaces </td>
+        '/<td[^>]*>(.*?)<\/td>/i',                                  // <td> and </td>
+        '/<span class="_html2text_ignore">.+?<\/span>/i',           // <span class="_html2text_ignore">...</span>
     );
 
     /**
@@ -106,6 +107,7 @@ class Html2Text
         "<div>\n",                       // <div>
         "\n\n",                          // <table> and </table>
         "\n",                            // <tr> and </tr>
+        "",                              // <td> containing blank spaces </td>
         "\t\t\\1\n",                     // <td> and </td>
         ""                               // <span class="_html2text_ignore">...</span>
     );
