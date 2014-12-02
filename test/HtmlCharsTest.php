@@ -19,7 +19,7 @@ class HtmlCharsTest extends \PHPUnit_Framework_TestCase
         // or still does.
         return array(
             // Non-breaking space, not a regular one.
-            array('&nbsp;', ' '),
+            array('&nbsp;', ' '),
             array('&gt;', '>'),
             array('&lt;', '<'),
             array('&copy;', '©'),
