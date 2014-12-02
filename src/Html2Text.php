@@ -21,7 +21,7 @@ namespace Html2Text;
 
 class Html2Text
 {
-    const ENCODING = 'UTF-8';
+    private $_encoding;
 
     /**
      * Contains the HTML content to convert.
@@ -233,10 +233,11 @@ class Html2Text
     }
 
     /**
-     * @param string $html    Source HTML
-     * @param array  $options Set configuration options
+     * @param string $html     Source HTML
+     * @param array  $options  Set configuration options
+     * @param string $encoding Set encoding
      */
-    public function __construct($html = '', $options = array())
+    public function __construct($html = '', $options = array(), $encoding = 'UTF-8')
     {
         // for backwards compatibility
         if (!is_array($options)) {
@@ -245,6 +246,7 @@ class Html2Text
 
         $this->html = $html;
         $this->options = array_merge($this->options, $options);
+        $this->_encoding = $encoding;
     }
 
     /**
@@ -354,7 +356,7 @@ class Html2Text
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
         $text = strip_tags($text);
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
-        $text = html_entity_decode($text, ENT_QUOTES, self::ENCODING);
+        $text = html_entity_decode($text, ENT_QUOTES, $this->_encoding);
 
         // Remove unknown/unhandled entities (this cannot be done in search-and-replace block)
         $text = preg_replace('/&([a-zA-Z0-9]{2,6}|#[0-9]{2,4});/', '', $text);
@@ -581,15 +583,15 @@ class Html2Text
      */
     private function strtoupper($str)
     {
-        $str = html_entity_decode($str, ENT_COMPAT, self::ENCODING);
+        $str = html_entity_decode($str, ENT_COMPAT, $this->_encoding);
 
         if (function_exists('mb_strtoupper')) {
-            $str = mb_strtoupper($str, self::ENCODING);
+            $str = mb_strtoupper($str, $this->_encoding);
         } else {
             $str = strtoupper($str);
         }
 
-        $str = htmlspecialchars($str, ENT_COMPAT, self::ENCODING);
+        $str = htmlspecialchars($str, ENT_COMPAT, $this->_encoding);
 
         return $str;
     }
