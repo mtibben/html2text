@@ -83,7 +83,7 @@ class Html2Text
     protected $entSearchArray = array(
         '/&#153;/i' => '™',                                      // TM symbol in win-1252
         '/&#151;/i' => '—',                                      // m-dash in win-1252
-        '/&(amp|#38);/i' => '|+|amp|+|',                              // Ampersand: see converter()
+        '/&(amp|#38);/i' => '|+|amp|+|',                         // Ampersand: see converter()
         '/[ ]{2,}/' => ' ',                                      // Runs of spaces, post-handling
     );
 
