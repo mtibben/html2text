@@ -104,4 +104,24 @@ EOT;
 
         $this->assertEquals($expected, $html2text->getText());
     }
+
+    public function testBoldLinks()
+    {
+        $html = '<b><a href="http://example.com">Link text</a></b>';
+        $expected = 'LINK TEXT [http://example.com]';
+
+        $html2text = new Html2Text($html, array('do_links' => 'inline'));
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
+
+    public function testInvertedBoldLinks()
+    {
+        $html = '<a href="http://example.com"><b>Link text</b></a>';
+        $expected = 'LINK TEXT [http://example.com]';
+
+        $html2text = new Html2Text($html, array('do_links' => 'inline'));
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
 }
