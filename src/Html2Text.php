@@ -216,6 +216,7 @@ class Html2Text
      * @type array
      */
     protected $options = array(
+        'do_upper'  => true,    // Convert strong and bold to uppercase
         'do_links' => 'inline', // 'none'
                                 // 'inline' (show links inline)
                                 // 'nextline' (show links on the next line)
@@ -521,11 +522,22 @@ class Html2Text
         switch (strtolower($matches[1])) {
             case 'b':
             case 'strong':
-                return $this->toupper($matches[3]);
-            case 'th':
-                return $this->toupper("\t\t" . $matches[3] . "\n");
-            case 'h':
-                return $this->toupper("\n\n" . $matches[3] . "\n\n");
+                if($this->options['do_upper'])
+                    return $this->toupper($matches[3]);
+                else
+                    return $matches[3];
+             case 'th':
+                $txt = "\t\t" . $matches[3] . "\n";
+                if($this->options['do_upper'])
+                    return $this->toupper($txt);
+                else
+                    return $txt;
+             case 'h':
+                $txt = "\n\n" . $matches[3] . "\n\n";
+                if($this->options['do_upper'])
+                    return $this->toupper($txt);
+                else
+                    return $txt;
             case 'a':
                 // override the link method
                 $linkOverride = null;
