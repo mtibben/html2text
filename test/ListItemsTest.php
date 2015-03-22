@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__.'/../lib/Html2Text/Html2Text.php';
+namespace Html2Text;
 
-class ListItemsTest extends PHPUnit_Framework_TestCase
+class ListItemsTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testUnorderedList()
@@ -14,7 +14,7 @@ class ListItemsTest extends PHPUnit_Framework_TestCase
     <li>
 </ul>
 EOT;
-        $expected_output =<<<EOT
+        $expected =<<<EOT
  	* one
  	* two
  	* 
@@ -23,9 +23,9 @@ EOT;
 EOT;
 
         $html2text = new \Html2Text\Html2Text($input);
-        $output = $html2text->get_text();
+        $output = $html2text->getText();
 
-        $this->assertEquals($expected_output, $output);
+        $this->assertEquals($expected, $output);
     }
 
     public function testOrderedList()
@@ -37,7 +37,7 @@ EOT;
     <li>
 </ol>
 EOT;
-        $expected_output =<<<EOT
+        $expected =<<<EOT
  	1. one
  	2. two
  	3. 
@@ -46,8 +46,8 @@ EOT;
 EOT;
 
         $html2text = new \Html2Text\Html2Text($input);
-        $output = $html2text->get_text();
+        $output = $html2text->getText();
 
-        $this->assertEquals($expected_output, $output);
+        $this->assertEquals($expected, $output);
     }
 }
