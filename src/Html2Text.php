@@ -38,16 +38,6 @@ class Html2Text
     protected $text;
 
     /**
-     * Maximum width of the formatted text, in columns.
-     *
-     * Set this value to 0 (or less) to ignore word wrapping
-     * and not constrain text to a fixed-width column.
-     *
-     * @type integer
-     */
-    protected $width = 70;
-
-    /**
      * List of preg* regular expression patterns to search for,
      * used in conjunction with $replace.
      *
