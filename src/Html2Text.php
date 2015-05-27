@@ -54,13 +54,9 @@ class Html2Text
         '/<br[^>]*>/i',                                   // <br>
         '/<i[^>]*>(.*?)<\/i>/i',                          // <i>
         '/<em[^>]*>(.*?)<\/em>/i',                        // <em>
-        '/(<ul[^>]*>|<\/ul>)/i',                          // <ul> and </ul>
-        '/(<ol[^>]*>|<\/ol>)/i',                          // <ol> and </ol>
         '/(<dl[^>]*>|<\/dl>)/i',                          // <dl> and </dl>
-        '/<li[^>]*>(.*?)<\/li>/i',                        // <li> and </li>
         '/<dd[^>]*>(.*?)<\/dd>/i',                        // <dd> and </dd>
         '/<dt[^>]*>(.*?)<\/dt>/i',                        // <dt> and </dt>
-        '/<li[^>]*>/i',                                   // <li>
         '/<hr[^>]*>/i',                                   // <hr>
         '/<div[^>]*>/i',                                  // <div>
         '/(<table[^>]*>|<\/table>)/i',                    // <table> and </table>
@@ -85,13 +81,9 @@ class Html2Text
         "\n",                            // <br>
         '_\\1_',                         // <i>
         '_\\1_',                         // <em>
-        "\n\n",                          // <ul> and </ul>
-        "\n\n",                          // <ol> and </ol>
         "\n\n",                          // <dl> and </dl>
-        "\t* \\1\n",                     // <li> and </li>
         " \\1\n",                        // <dd> and </dd>
         "\t* \\1",                       // <dt> and </dt>
-        "\n\t* ",                        // <li>
         "\n-------------------------\n", // <hr>
         "<div>\n",                       // <div>
         "\n\n",                          // <table> and </table>
@@ -112,6 +104,7 @@ class Html2Text
         '/&#151;/i',                                     // m-dash in win-1252
         '/&(amp|#38);/i',                                // Ampersand: see converter()
         '/[ ]{2,}/',                                     // Runs of spaces, post-handling
+        '/&nebsp;/i',                                    // Never-Ever-breaking space (dirty hack)
     );
 
     /**
@@ -125,6 +118,7 @@ class Html2Text
         '—',         // m-dash
         '|+|amp|+|', // Ampersand: see converter()
         ' ',         // Runs of spaces, post-handling
+        ' ',         // Never-Ever-breaking space (dirty hack)
     );
 
     /**
@@ -138,7 +132,9 @@ class Html2Text
         '/<(b)( [^>]*)?>(.*?)<\/b>/i',                           // <b>
         '/<(strong)( [^>]*)?>(.*?)<\/strong>/i',                 // <strong>
         '/<(th)( [^>]*)?>(.*?)<\/th>/i',                         // <th> and </th>
-        '/<(a) [^>]*href=("|\')([^"\']+)\2([^>]*)>(.*?)<\/a>/i'  // <a href="">
+        '/<(a) [^>]*href=("|\')([^"\']+)\2([^>]*)>(.*?)<\/a>/i', // <a href="">
+        '/<(ul)( [^>]*)?>(.*?)<\/ul>/i',                         // <ul>
+        '/<(ol)( [^>]*)?>(.*?)<\/ol>/i',                         // <ol>
     );
 
     /**
@@ -526,6 +522,32 @@ class Html2Text
                 $url = str_replace(' ', '', $matches[3]);
 
                 return $this->buildlinkList($url, $matches[5], $linkOverride);
+            case 'ul':
+                // prepare item padding
+                $itemWidth = $this->options['width'] - (4 + 2);  // tab(4) + '* '
+                $itemPadding = "\t" . str_repeat("&nebsp;", 2);
+                $items = preg_replace_callback('/<li[^>]*>(.*?)<\/li>/i', function($m) use ($itemPadding, $itemWidth) {
+                    $item = implode("\n".$itemPadding, explode("\n", wordwrap($m[1], $itemWidth, "\n")));
+                    return "\t* " . $item . "\n";
+                }, $matches[3]);
+                $items = preg_replace('/<li[^>]*>/i', "\t* ", $items);
+                return "\n\n" . $items . "\n\n";
+            case 'ol':
+                $totalCount = preg_match_all('/<li[^>]*>(.*?)<\/li>/i', $matches[3]);
+                $digits = floor($totalCount / 10) + 1;
+                // prepare item padding
+                $itemWidth = $this->options['width'] - (4 + $digits + 2);  // tab(4) + digit + '. '
+                $itemPadding = "\t" . str_repeat('&nebsp;', $digits + 2);   // little dirty hack
+                $i = 1;
+                $items = preg_replace_callback('/<li[^>]*>(.*?)<\/li>/i', function($m) use (&$i, $digits, $itemWidth, $itemPadding) {
+                    $item = implode("\n".$itemPadding, explode("\n", wordwrap($m[1], $itemWidth, "\n")));
+                    return sprintf("\t%".$digits."d. %s\n", $i++, $item);
+                }, $matches[3]);
+                $items = preg_replace_callback('/<li[^>]*>/i', function() use (&$i, $digits) {
+                    return sprintf("\t%".$digits."d. ", $i++);
+                }, $items);
+
+                return "\n\n" . $items . "\n\n";
         }
 
         return '';
