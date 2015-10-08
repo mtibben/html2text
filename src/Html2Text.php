@@ -548,7 +548,7 @@ class Html2Text
      * @param  string $str Text to convert
      * @return string Converted text
      */
-    private function toupper($str)
+    protected function toupper($str)
     {
         // string can contain HTML tags
         $chunks = preg_split('/(<[^>]*>)/', $str, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
@@ -569,7 +569,7 @@ class Html2Text
      * @param  string $str Text to convert
      * @return string Converted text
      */
-    private function strtoupper($str)
+    protected function strtoupper($str)
     {
         $str = html_entity_decode($str, ENT_COMPAT, self::ENCODING);
 
