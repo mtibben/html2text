@@ -320,7 +320,7 @@ class Html2Text
     {
         $this->linkList = array();
 
-        $text = trim(stripslashes($this->html));
+        $text = trim($this->html);
 
         $this->converter($text);
 
