@@ -66,6 +66,7 @@ class Html2Text
         '/(<table[^>]*>|<\/table>)/i',                    // <table> and </table>
         '/(<tr[^>]*>|<\/tr>)/i',                          // <tr> and </tr>
         '/<td[^>]*>(.*?)<\/td>/i',                        // <td> and </td>
+        '/<img(?:.*?)alt=("|\')(.*?)("|\')(?:.*?)>/i',    // img alt text
         '/<span class="_html2text_ignore">.+?<\/span>/i', // <span class="_html2text_ignore">...</span>
     );
 
@@ -97,6 +98,7 @@ class Html2Text
         "\n\n",                          // <table> and </table>
         "\n",                            // <tr> and </tr>
         "\t\t\\1\n",                     // <td> and </td>
+        "image: \\1\\2\\3",              // img alt text
         ""                               // <span class="_html2text_ignore">...</span>
     );
 
@@ -112,6 +114,7 @@ class Html2Text
         '/&#151;/i',                                     // m-dash in win-1252
         '/&(amp|#38);/i',                                // Ampersand: see converter()
         '/[ ]{2,}/',                                     // Runs of spaces, post-handling
+        '/&nbsp;/',                                      // Prevent strange characters
     );
 
     /**
@@ -125,6 +128,7 @@ class Html2Text
         '—',         // m-dash
         '|+|amp|+|', // Ampersand: see converter()
         ' ',         // Runs of spaces, post-handling
+        ' ',         // Prevent strange characters
     );
 
     /**
