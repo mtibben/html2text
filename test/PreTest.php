@@ -20,13 +20,14 @@ HTML symbols &amp;
 EOT;
 
         $expected =<<<'EOT'
-Before 
+Before
 
 Foo bar baz
 
 HTML symbols &
 
 After
+
 EOT;
 
         $html2text = new Html2Text($html);

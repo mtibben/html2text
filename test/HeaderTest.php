@@ -14,6 +14,7 @@ EOT;
 WILL BE UTF-8 (ÄÖÜÈÉИЛČΛ) UPPERCASED
 
 Will remain lowercased
+
 EOT;
 
         $html2text = new Html2Text($html);
