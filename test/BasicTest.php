@@ -19,6 +19,57 @@ class BasicTest extends \PHPUnit_Framework_TestCase
                 'html'      => '0',
                 'expected'  => '0',
             ),
+            'Paragraph with whitespace wrapping it' => array(
+                'html'      => 'Foo <p>Bar</p> Baz',
+                'expected'  => "Foo\nBar\nBaz",
+            ),
+            'Paragraph text with linebreak flat' => array(
+                'html'      => "<p>Foo<br/>Bar</p>",
+                'expected'  => <<<EOT
+Foo
+Bar
+
+EOT
+            ),
+            'Paragraph text with linebreak formatted with newline' => array(
+                'html'      => <<<EOT
+<p>
+    Foo<br/>
+    Bar
+</p>
+EOT
+                ,
+                'expected'  => <<<EOT
+Foo
+Bar
+
+EOT
+            ),
+            'Paragraph text with linebreak formatted whth newline, but without whitespace' => array(
+                'html'      => <<<EOT
+<p>Foo<br/>
+Bar</p>
+EOT
+                ,
+                'expected'  => <<<EOT
+Foo
+Bar
+
+EOT
+            ),
+            'Paragraph text with linebreak formatted with indentation' => array(
+                'html'      => <<<EOT
+<p>
+    Foo<br/>Bar
+</p>
+EOT
+                ,
+                'expected'  => <<<EOT
+Foo
+Bar
+
+EOT
+            ),
         );
     }
 

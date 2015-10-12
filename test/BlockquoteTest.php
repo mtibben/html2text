@@ -22,11 +22,12 @@ HTML symbols &amp;
 EOT
                 ,
                 'expected' => <<<EOT
-Before 
+Before
 
 > Foo bar baz HTML symbols &
 
 After
+
 EOT
                 ,
             ),
@@ -53,6 +54,7 @@ Highlights from today’s NEWLYHIRED GAME:
 > ZHU: Her name is Jolene. She’s nice. I like her.
 
 I think the audience is winning.  - Derek
+
 EOF
             ),
         );
