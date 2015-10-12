@@ -50,8 +50,6 @@ class Html2Text
         '/<head[^>]*>.*?<\/head>/i',                      // <head>
         '/<script[^>]*>.*?<\/script>/i',                  // <script>s -- which strip_tags supposedly has problems with
         '/<style[^>]*>.*?<\/style>/i',                    // <style>s -- which strip_tags supposedly has problems with
-        '/<p[^>]*>/i',                                    // <P>
-        '/<br[^>]*>/i',                                   // <br>
         '/<i[^>]*>(.*?)<\/i>/i',                          // <i>
         '/<em[^>]*>(.*?)<\/em>/i',                        // <em>
         '/(<ul[^>]*>|<\/ul>)/i',                          // <ul> and </ul>
@@ -82,8 +80,6 @@ class Html2Text
         '',                              // <head>
         '',                              // <script>s -- which strip_tags supposedly has problems with
         '',                              // <style>s -- which strip_tags supposedly has problems with
-        "\n\n",                          // <P>
-        "\n",                            // <br>
         '_\\1_',                         // <i>
         '_\\1_',                         // <em>
         "\n\n",                          // <ul> and </ul>
@@ -137,6 +133,8 @@ class Html2Text
      */
     protected $callbackSearch = array(
         '/<(h)[123456]( [^>]*)?>(.*?)<\/h[123456]>/i',           // h1 - h6
+        '/[ ]*<(p)( [^>]*)?>(.*?)<\/p>[ ]*/si',                  // <p> with surrounding whitespace.
+        '/<(br)[^>]*>[ ]*/i',                                    // <br> with leading whitespace after the newline.
         '/<(b)( [^>]*)?>(.*?)<\/b>/i',                           // <b>
         '/<(strong)( [^>]*)?>(.*?)<\/strong>/i',                 // <strong>
         '/<(th)( [^>]*)?>(.*?)<\/th>/i',                         // <th> and </th>
@@ -511,6 +509,17 @@ class Html2Text
     protected function pregCallback($matches)
     {
         switch (strtolower($matches[1])) {
+            case 'p':
+                // Replace newlines with spaces.
+                $para = str_replace("\n", " ", $matches[3]);
+
+                // Trim trailing and leading whitespace within the tag.
+                $para = trim($para);
+
+                // Add trailing newlines for this para.
+                return "\n" . $para . "\n";
+            case 'br':
+                return "\n";
             case 'b':
             case 'strong':
                 return $this->toupper($matches[3]);
