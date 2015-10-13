@@ -488,7 +488,7 @@ class Html2Text
                         $text = substr($text, 0, $start - $diff)
                             . $body . substr($text, $end + strlen($m[0]) - $diff);
 
-                        $diff = $len + $taglen + strlen($m[0]) - strlen($body);
+                        $diff += $len + $taglen + strlen($m[0]) - strlen($body);
                         unset($body);
                     }
                 } else {
