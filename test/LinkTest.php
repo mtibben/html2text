@@ -135,4 +135,14 @@ EOT;
 
         $this->assertEquals($expected, $html2text->getText());
     }
+
+    public function testDoLinksBBCode()
+    {
+        $html = '<a href="http://example.com"><b>Link text</b></a>';
+        $expected = '[url=http://example.com]LINK TEXT[/url]';
+
+        $html2text = new Html2Text($html, array('do_links' => 'bbcode'));
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
 }

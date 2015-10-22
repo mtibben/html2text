@@ -210,6 +210,7 @@ class Html2Text
                                 // 'inline' (show links inline)
                                 // 'nextline' (show links on the next line)
                                 // 'table' (if a table of link URLs should be listed after the text.
+                                // 'bbcode' (show links as bbcode)
 
         'width' => 70,          //  Maximum width of the formatted text, in columns.
                                 //  Set this value to 0 (or less) to ignore word wrapping
@@ -409,6 +410,8 @@ class Html2Text
             return $display . ' [' . ($index + 1) . ']';
         } elseif ($linkMethod == 'nextline') {
             return $display . "\n[" . $url . ']';
+        } elseif ($linkMethod == 'bbcode') {
+            return sprintf('[url=%s]%s[/url]', $url, $display);
         } else { // link_method defaults to inline
             return $display . ' [' . $url . ']';
         }
