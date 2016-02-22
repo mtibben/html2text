@@ -67,6 +67,13 @@ class Html2Text
         '/(<tr[^>]*>|<\/tr>)/i',                          // <tr> and </tr>
         '/<td[^>]*>(.*?)<\/td>/i',                        // <td> and </td>
         '/<span class="_html2text_ignore">.+?<\/span>/i', // <span class="_html2text_ignore">...</span>
+			/*##mygruz20160216112857 {
+			It was:
+			It became:*/
+        '/<(img)[^>]*src=\"([^>"]+)\"[^>] *alt=\"([^>"]+)\"[^>]*>/i',           // <img> with src and then alt tag
+        '/<(img)[^>]*alt=\"([^>"]+)\"[^>] *src=\"([^>"]+)\"[^>]*>/i',           // <img> with alt and then src tag
+        '/<(img)[^>]*src=\"([^>"]+)\"[^>]*>/i',           // <img> with src tag
+			/*##mygruz20160216112857 } */
         '/<(img)[^>]*alt=\"([^>"]+)\"[^>]*>/i',           // <img> with alt tag
     );
 
@@ -97,6 +104,13 @@ class Html2Text
         "\n",                            // <tr> and </tr>
         "\t\t\\1\n",                     // <td> and </td>
         "",                              // <span class="_html2text_ignore">...</span>
+			/*##mygruz20160216112908 {
+			It was:
+			It became:*/
+        '[\\3:\\2]',                         // <img> with src and then alt tag
+        '[\\2:\\3]',                         // <img> with alt and then src tag
+        '[\\2]',                         // <img> with src tag
+			/*##mygruz20160216112908 } */
         '[\\2]',                         // <img> with alt tag
     );
 
@@ -217,6 +231,12 @@ class Html2Text
         'width' => 70,          //  Maximum width of the formatted text, in columns.
                                 //  Set this value to 0 (or less) to ignore word wrapping
                                 //  and not constrain text to a fixed-width column.
+			/*##mygruz20160216113022 {
+			It was:
+			It became:*/
+        'show_img_link' => 'no',          //  'yes' - show
+                                //  other value - don't show
+			/*##mygruz20160216113022 } */
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -356,6 +376,17 @@ class Html2Text
     {
         $this->convertBlockquotes($text);
         $this->convertPre($text);
+        /*##mygruz20160216113043 {
+		  It was:
+		  It became:*/
+		  if ($this->options['show_img_link'] == 'yes') {
+			  $c = count ($this->search);
+			  for ($i = $c-1; $i < $c-4; $i++) {
+					unset($this->search[$c]);
+					unset($this->replace[$c]);
+			  }
+		  }
+		  /*##mygruz20160216113043 } */
         $text = preg_replace($this->search, $this->replace, $text);
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
         $text = strip_tags($text);
