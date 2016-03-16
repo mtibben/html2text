@@ -26,6 +26,10 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 'html' => 'xx<img src="http://example.com/example.jpg" alt="An example image">xx',
                 'expected'  => 'xx[An example image]xx',
             ),
+            'With italics' => array(
+                'html' => '<img src="shrek.jpg" alt="the ogrelord" /> Blah <i>blah</i> blah',
+                'expected' => '[the ogrelord] Blah _blah_ blah'
+            )
         );
     }
 
