@@ -52,7 +52,7 @@ class Html2Text
         '/<head[^>]*>.*?<\/head>/i',                      // <head>
         '/<script[^>]*>.*?<\/script>/i',                  // <script>s -- which strip_tags supposedly has problems with
         '/<style[^>]*>.*?<\/style>/i',                    // <style>s -- which strip_tags supposedly has problems with
-        '/<i[^>]*>(.*?)<\/i>/i',                          // <i>
+        '/<i(?!mg)[^>]*>(.*?)<\/i>/i',                    // <i>
         '/<em[^>]*>(.*?)<\/em>/i',                        // <em>
         '/(<ul[^>]*>|<\/ul>)/i',                          // <ul> and </ul>
         '/(<ol[^>]*>|<\/ol>)/i',                          // <ol> and </ol>
