@@ -436,7 +436,8 @@ class Html2Text
     {
         // get the content of PRE element
         while (preg_match('/<pre[^>]*>(.*)<\/pre>/ismU', $text, $matches)) {
-            $this->preContent = $matches[1];
+            // Replace br tags with newlines to prevent the search-and-replace callback from killing whitespace
+            $this->preContent = preg_replace('/(<br\b[^>]*>)/i', "\n", $matches[1]);
 
             // Run our defined tags search-and-replace with callback
             $this->preContent = preg_replace_callback(
