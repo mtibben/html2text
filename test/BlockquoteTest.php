@@ -57,6 +57,21 @@ I think the audience is winning.  - Derek
 
 EOF
             ),
+            'Multibyte strings before blockquote' => array(
+                'html' => <<<EOF
+“Hello”
+
+<blockquote>goodbye</blockquote>
+
+EOF
+                ,
+                'expected' => <<<EOF
+“Hello” 
+
+> goodbye
+
+EOF
+            )
         );
     }
 

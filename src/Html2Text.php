@@ -472,11 +472,13 @@ class Html2Text
     protected function convertBlockquotes(&$text)
     {
         if (preg_match_all('/<\/*blockquote[^>]*>/i', $text, $matches, PREG_OFFSET_CAPTURE)) {
+            $originalText = $text;
             $start = 0;
             $taglen = 0;
             $level = 0;
             $diff = 0;
             foreach ($matches[0] as $m) {
+                $m[1] = mb_strlen(substr($originalText, 0, $m[1]));
                 if ($m[0][0] == '<' && $m[0][1] == '/') {
                     $level--;
                     if ($level < 0) {
