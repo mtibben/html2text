@@ -396,6 +396,7 @@ class Html2Text
      */
     protected function buildlinkList($link, $display, $linkOverride = null)
     {
+        $link = html_entity_decode($link);
         $linkMethod = ($linkOverride) ? $linkOverride : $this->options['do_links'];
         if ($linkMethod == 'none') {
             return $display;
