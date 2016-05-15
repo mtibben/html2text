@@ -159,4 +159,24 @@ EOT;
 
         $this->assertEquals($expected, $html2text->getText());
     }
+
+    public function testMailto()
+    {
+        $html = '<a href="mailto:example@example.com">Link text</a>';
+        $expected = 'Link text';
+
+        $html2text = new Html2Text($html, array('do_links' => 'inline'));
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
+
+    public function testMailtoWithEntity()
+    {
+        $html = '<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;example@example.com">Link text</a>';
+        $expected = 'Link text';
+
+        $html2text = new Html2Text($html, array('do_links' => 'inline'));
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
 }
