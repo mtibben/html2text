@@ -46,10 +46,10 @@ Will remain lowercased
 EOT;
 
         $html2text = new Html2Text($html, [
-          'heading' => [
-            '1' => ['case' => Html2Text::OPTION_LOWERCASE],
-            '4' => ['case' => Html2Text::OPTION_LOWERCASE, 'colon' => true],
-            '6' => ['case' => Html2Text::OPTION_UPPERCASE],
+          'elements' => [
+            'h1' => ['case' => Html2Text::OPTION_LOWERCASE],
+            'h4' => ['case' => Html2Text::OPTION_LOWERCASE, 'colon' => true],
+            'h6' => ['case' => Html2Text::OPTION_UPPERCASE],
           ]
         ]);
         $output = $html2text->getText();

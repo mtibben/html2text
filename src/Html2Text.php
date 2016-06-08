@@ -30,6 +30,11 @@ class Html2Text
     const OPTION_UPPERCASE = 'optionUppercase';
     const OPTION_LOWERCASE = 'optionLowercase';
 
+    private static $caseModeMapping = [
+        self::OPTION_LOWERCASE => MB_CASE_LOWER,
+        self::OPTION_UPPERCASE => MB_CASE_UPPER,
+    ];
+
     /**
      * Contains the HTML content to convert.
      *
@@ -139,7 +144,7 @@ class Html2Text
      * @type array
      */
     protected $callbackSearch = array(
-        '/<(h)([123456])( [^>]*)?>(.*?)<\/h[123456]>/i',           // h1 - h6
+        '/<(h[123456])( [^>]*)?>(.*?)<\/h[123456]>/i',           // h1 - h6
         '/[ ]*<(p)( [^>]*)?>(.*?)<\/p>[ ]*/si',                  // <p> with surrounding whitespace.
         '/<(br)[^>]*>[ ]*/i',                                    // <br> with leading whitespace after the newline.
         '/<(b)( [^>]*)?>(.*?)<\/b>/i',                           // <b>
@@ -210,52 +215,53 @@ class Html2Text
     /**
      * Various configuration options (able to be set in the constructor)
      *
-     ** HEADING **
-     * Case:
+     * do_links:
+     * 'none'
+     * 'inline' (show links inline)
+     * 'nextline' (show links on the next line)
+     * 'table' (if a table of link URLs should be listed after the text.
+     * 'bbcode' (show links as bbcode)
+     *
+     * width:
+     * Maximum width of the formatted text, in columns.
+     * Set this value to 0 (or less) to ignore word wrapping and not constrain text to a fixed-width column.
+     *
+     * case:
      * - uppercase: uppercase "SECTION TITLE"
      * - lowercase: lowercase ucfirst "Section Title"
      *
-     * Other:
-     * - colon: add a colon at the end "Section Title:"
+     * colon: add a colon at the end "Section Title:"
      *
      * @type array
      */
     protected $options = array(
-        'do_links' => 'inline', // 'none'
-        // 'inline' (show links inline)
-        // 'nextline' (show links on the next line)
-        // 'table' (if a table of link URLs should be listed after the text.
-        // 'bbcode' (show links as bbcode)
-
-        'width' => 70,          //  Maximum width of the formatted text, in columns.
-        //  Set this value to 0 (or less) to ignore word wrapping
-        //  and not constrain text to a fixed-width column.
-
-        'heading' => [
-            '1' => [
+        'do_links' => 'inline',
+        'width' => 70,
+        'elements' => [
+            'h1' => [
                 'case' => self::OPTION_UPPERCASE,
                 'colon' => false,
-                ],
-            '2' => [
+            ],
+            'h2' => [
                 'case' => self::OPTION_UPPERCASE,
                 'colon' => false,
-                ],
-            '3' => [
+            ],
+            'h3' => [
                 'case' => self::OPTION_UPPERCASE,
                 'colon' => false,
-                ],
-            '4' => [
+            ],
+            'h4' => [
                 'case' => self::OPTION_UPPERCASE,
                 'colon' => false,
-                ],
-            '5' => [
+            ],
+            'h5' => [
                 'case' => self::OPTION_UPPERCASE,
                 'colon' => false,
-                ],
-            '6' => [
+            ],
+            'h6' => [
                 'case' => self::OPTION_UPPERCASE,
                 'colon' => false,
-                ],
+            ]
         ]
     );
 
@@ -570,6 +576,10 @@ class Html2Text
      */
     protected function pregCallback($matches)
     {
+        if (preg_match('/h[123456]/', $matches[1])) {
+            return $this->convertHeading($matches[3], $matches[1]);
+        }
+
         switch (mb_strtolower($matches[1])) {
             case 'p':
                 // Replace newlines with spaces.
@@ -587,8 +597,6 @@ class Html2Text
                 return $this->toupper($matches[3]); // @todo add option
             case 'th':
                 return $this->toupper("\t\t" . $matches[3] . "\n"); // @todo add option
-            case 'h':
-                return $this->convertHeading($matches[4], $matches[2]);
             case 'a':
                 // override the link method
                 $linkOverride = null;
@@ -607,24 +615,25 @@ class Html2Text
     /**
      * @param $string
      *
-     * @param $level
+     * @param $element
      *
      * @return string
      */
-    protected function convertHeading($string, $level) {
-        $options = $this->options['heading'][$level];
-
-        switch ($options['case']) {
-            default:
-            case self::OPTION_UPPERCASE:
-                $string = $this->convertCase($string, MB_CASE_UPPER);
-                break;
-            case self::OPTION_LOWERCASE:
-                $string = $this->convertCase($string, MB_CASE_LOWER);
-                break;
-        }
+    protected function convertHeading($string, $element)
+    {
+        $options = $this->getOptionsForElement($element);
+        $string = $this->convertCase($string, $element);
 
         return "\n\n" . ucfirst($string) . ($options['colon'] ? ':' : '') . "\n\n";
+    }
+
+    private function getOptionsForElement($element)
+    {
+        if (!array_key_exists($element, $this->options['elements'])) {
+            throw new \InvalidArgumentException("Element '$element' has no options");
+        }
+
+        return $this->options['elements'][$element];
     }
 
     /**
@@ -639,16 +648,15 @@ class Html2Text
     }
 
     /**
-     * @param $str
-     * @param $mode
+     * @param string $str
+     * @param string $element
      *
      * @return string
      */
-    private function convertCase($str, $mode)
+    private function convertCase($str, $element)
     {
-        if (!in_array($mode, [MB_CASE_UPPER, MB_CASE_LOWER, MB_CASE_TITLE])) {
-            throw new \InvalidArgumentException("Case direction must be one of MB_CASE_UPPER, MB_CASE_LOWER, or MB_CASE_TITLE, '$mode'' given");
-        }
+        $options = $this->getOptionsForElement($element);
+        $mode = self::$caseModeMapping[$options['case']];
 
         // string can contain HTML tags
         $chunks = preg_split('/(<[^>]*>)/', $str, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
