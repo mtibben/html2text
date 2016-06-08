@@ -1,5 +1,7 @@
 <?php
 
+// Taken from https://raw.githubusercontent.com/mtibben/html2text/master/src/Html2Text.php for testing @todo use repository
+
 /*
  * Copyright (c) 2005-2007 Jon Abernathy <jon@chuggnutt.com>
  *
@@ -24,6 +26,9 @@ class Html2Text
     const ENCODING = 'UTF-8';
 
     protected $htmlFuncFlags;
+
+    const OPTION_UPPERCASE = 'optionUppercase';
+    const OPTION_LOWERCASE = 'optionLowercase';
 
     /**
      * Contains the HTML content to convert.
@@ -134,7 +139,7 @@ class Html2Text
      * @type array
      */
     protected $callbackSearch = array(
-        '/<(h)[123456]( [^>]*)?>(.*?)<\/h[123456]>/i',           // h1 - h6
+        '/<(h)([123456])( [^>]*)?>(.*?)<\/h[123456]>/i',           // h1 - h6
         '/[ ]*<(p)( [^>]*)?>(.*?)<\/p>[ ]*/si',                  // <p> with surrounding whitespace.
         '/<(br)[^>]*>[ ]*/i',                                    // <br> with leading whitespace after the newline.
         '/<(b)( [^>]*)?>(.*?)<\/b>/i',                           // <b>
@@ -205,18 +210,53 @@ class Html2Text
     /**
      * Various configuration options (able to be set in the constructor)
      *
+     ** HEADING **
+     * Case:
+     * - uppercase: uppercase "SECTION TITLE"
+     * - lowercase: lowercase ucfirst "Section Title"
+     *
+     * Other:
+     * - colon: add a colon at the end "Section Title:"
+     *
      * @type array
      */
     protected $options = array(
         'do_links' => 'inline', // 'none'
-                                // 'inline' (show links inline)
-                                // 'nextline' (show links on the next line)
-                                // 'table' (if a table of link URLs should be listed after the text.
-                                // 'bbcode' (show links as bbcode)
+        // 'inline' (show links inline)
+        // 'nextline' (show links on the next line)
+        // 'table' (if a table of link URLs should be listed after the text.
+        // 'bbcode' (show links as bbcode)
 
         'width' => 70,          //  Maximum width of the formatted text, in columns.
-                                //  Set this value to 0 (or less) to ignore word wrapping
-                                //  and not constrain text to a fixed-width column.
+        //  Set this value to 0 (or less) to ignore word wrapping
+        //  and not constrain text to a fixed-width column.
+
+        'heading' => [
+            '1' => [
+                'case' => self::OPTION_UPPERCASE,
+                'colon' => false,
+                ],
+            '2' => [
+                'case' => self::OPTION_UPPERCASE,
+                'colon' => false,
+                ],
+            '3' => [
+                'case' => self::OPTION_UPPERCASE,
+                'colon' => false,
+                ],
+            '4' => [
+                'case' => self::OPTION_UPPERCASE,
+                'colon' => false,
+                ],
+            '5' => [
+                'case' => self::OPTION_UPPERCASE,
+                'colon' => false,
+                ],
+            '6' => [
+                'case' => self::OPTION_UPPERCASE,
+                'colon' => false,
+                ],
+        ]
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -237,7 +277,7 @@ class Html2Text
         }
 
         $this->html = $html;
-        $this->options = array_merge($this->options, $options);
+        $this->options = array_replace_recursive($this->options, $options);
         $this->htmlFuncFlags = (PHP_VERSION_ID < 50400)
             ? ENT_COMPAT
             : ENT_COMPAT | ENT_HTML5;
@@ -324,12 +364,12 @@ class Html2Text
 
     protected function convert()
     {
-       $origEncoding = mb_internal_encoding();
-       mb_internal_encoding(self::ENCODING);
+        $origEncoding = mb_internal_encoding();
+        mb_internal_encoding(self::ENCODING);
 
-       $this->doConvert();
+        $this->doConvert();
 
-       mb_internal_encoding($origEncoding);
+        mb_internal_encoding($origEncoding);
     }
 
     protected function doConvert()
@@ -544,11 +584,11 @@ class Html2Text
                 return "\n";
             case 'b':
             case 'strong':
-                return $this->toupper($matches[3]);
+                return $this->toupper($matches[3]); // @todo add option
             case 'th':
-                return $this->toupper("\t\t" . $matches[3] . "\n");
+                return $this->toupper("\t\t" . $matches[3] . "\n"); // @todo add option
             case 'h':
-                return $this->toupper("\n\n" . $matches[3] . "\n\n");
+                return $this->convertHeading($matches[4], $matches[2]);
             case 'a':
                 // override the link method
                 $linkOverride = null;
@@ -565,6 +605,29 @@ class Html2Text
     }
 
     /**
+     * @param $string
+     *
+     * @param $level
+     *
+     * @return string
+     */
+    protected function convertHeading($string, $level) {
+        $options = $this->options['heading'][$level];
+
+        switch ($options['case']) {
+            default:
+            case self::OPTION_UPPERCASE:
+                $string = $this->convertCase($string, MB_CASE_UPPER);
+                break;
+            case self::OPTION_LOWERCASE:
+                $string = $this->convertCase($string, MB_CASE_LOWER);
+                break;
+        }
+
+        return "\n\n" . ucfirst($string) . ($options['colon'] ? ':' : '') . "\n\n";
+    }
+
+    /**
      * Callback function for preg_replace_callback use in PRE content handler.
      *
      * @param  array  $matches PREG matches
@@ -573,6 +636,35 @@ class Html2Text
     protected function pregPreCallback(/** @noinspection PhpUnusedParameterInspection */ $matches)
     {
         return $this->preContent;
+    }
+
+    /**
+     * @param $str
+     * @param $mode
+     *
+     * @return string
+     */
+    private function convertCase($str, $mode)
+    {
+        if (!in_array($mode, [MB_CASE_UPPER, MB_CASE_LOWER, MB_CASE_TITLE])) {
+            throw new \InvalidArgumentException("Case direction must be one of MB_CASE_UPPER, MB_CASE_LOWER, or MB_CASE_TITLE, '$mode'' given");
+        }
+
+        // string can contain HTML tags
+        $chunks = preg_split('/(<[^>]*>)/', $str, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+        // convert only the text between HTML tags
+        foreach ($chunks as $i => $chunk) {
+            if ($chunk[0] != '<') {
+                $chunk = html_entity_decode($str, $this->htmlFuncFlags, self::ENCODING);
+                $chunk = mb_convert_case($chunk, $mode);
+                $chunk = htmlspecialchars($chunk, $this->htmlFuncFlags, self::ENCODING);
+
+                $chunks[$i] = $chunk;
+            }
+        }
+
+        return implode($chunks);
     }
 
     /**
