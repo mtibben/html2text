@@ -83,7 +83,7 @@ EOT;
 EOT;
 
     $expected =<<<EOT
-The following WILL BE UTF-8 (ÄÖÜÈÉИЛČΛ) UPPERCASED when parsed 
+The following WILL BE UTF-8 (ÄÖÜÈÉИЛČΛ) UPPERCASED when parsed
 The following will be utf-8 (äöüèéилčλ) lowercased when parsed
 The following will remain lowercased when parsed
 
@@ -109,7 +109,7 @@ EOT;
         $expected = <<<EOT
 Should have "BBB" changed to BBB
 
- 	* Custom bullet should be removed
+	* Custom bullet should be removed
 
 EOT;
 

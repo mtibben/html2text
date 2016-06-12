@@ -144,7 +144,7 @@ class Html2Text
         self::PATTERN_OL => "\n\n",
         self::PATTERN_DL => "\n\n",
         self::PATTERN_DD => " \\1\n",
-        self::PATTERN_DT => "\t* \\1",
+        self::PATTERN_DT => "\t* \\1 ",
         self::PATTERN_LI => ['callback' => 'pregCallback'],
         self::PATTERN_UNCLOSED_LI => "\n\t* ",
         self::PATTERN_HR => "\n-------------------------\n",
@@ -392,6 +392,9 @@ class Html2Text
     {
         $this->convertBlockquotes($text);
         $this->convertPre($text);
+
+        // Collapse space between tags to avoid left over whitespace
+        $text = preg_replace('/>\s+</', '><', $text);
 
         foreach (self::SEARCH_REPLACE_MAPPING as $pattern => $replace) {
             if (is_array($replace)) {

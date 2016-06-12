@@ -15,9 +15,9 @@ class ListTest extends \PHPUnit_Framework_TestCase
 EOT;
 
         $expected =<<<'EOT'
- 	* Item 1
- 	* Item 2
- 	* Item 3
+	* Item 1
+	* Item 2
+	* Item 3
 
 
 EOT;
@@ -37,9 +37,9 @@ EOT;
 EOT;
 
         $expected =<<<'EOT'
- 	* Item 1
- 	* Item 2
- 	* Item 3
+	* Item 1
+	* Item 2
+	* Item 3
 
 
 EOT;
