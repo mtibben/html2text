@@ -88,8 +88,31 @@ EOT;
           'b' => ['case' => Html2Text::OPTION_LOWERCASE],
         ]
       ]);
-      $output = $html2text->getText();
 
-      $this->assertEquals($expected, $output);
+      $this->assertEquals($expected, $html2text->getText());
   }
+
+    public function testReplace() {
+        $html =<<<EOT
+  <h1>Should have "AAA" changed to BBB</h1>
+   <li>• Custom bullet should be removed</li>
+EOT;
+
+        $expected = <<<EOT
+Should have "BBB" changed to BBB
+
+ 	* Custom bullet should be removed
+
+EOT;
+
+        $html2text = new Html2Text($html, [
+            'width' => 0,
+            'elements' => [
+                'h1' => ['case' => Html2Text::OPTION_NONE, 'replace' => ['AAA', 'BBB']],
+                'li' => [ 'replace' => ['•', '']],
+            ]
+        ]);
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
 }

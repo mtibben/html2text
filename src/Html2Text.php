@@ -667,6 +667,14 @@ class Html2Text
 
             $str = trim(implode($chunks));
         }
+        if (isset($options['replace']) && $options['replace']) {
+            if (isset($options['replace'][2])) {
+                $delimiter = $options['replace'][2];
+            } else {
+                $delimiter = '@';
+            }
+            $str = preg_replace($delimiter . $options['replace'][0] . $delimiter, $options['replace'][1], $str);
+        }
 
         if (isset($options['prepend']) && $options['prepend']) {
             $str = $options['prepend'] . $str;
@@ -675,6 +683,7 @@ class Html2Text
         if (isset($options['append']) && $options['append']) {
             $str = $str . $options['append'];
         }
+
 
         return $str;
     }
