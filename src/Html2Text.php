@@ -27,11 +27,15 @@ class Html2Text
 
     const OPTION_UPPERCASE = 'optionUppercase';
     const OPTION_LOWERCASE = 'optionLowercase';
+    const OPTION_UCFIRST = 'optionUcfirst';
+    const OPTION_TITLE = 'optionTitle';
     const OPTION_NONE = 'optionNone';
 
     private static $caseModeMapping = [
         self::OPTION_LOWERCASE => MB_CASE_LOWER,
         self::OPTION_UPPERCASE => MB_CASE_UPPER,
+        self::OPTION_UCFIRST => MB_CASE_LOWER,
+        self::OPTION_TITLE => MB_CASE_TITLE,
     ];
 
     const DEFAULT_OPTIONS = array(
@@ -40,21 +44,33 @@ class Html2Text
         'elements' => [
             'h1' => [
                 'case' => self::OPTION_UPPERCASE,
+                'prepend' => "\n\n",
+                'append' => "\n\n",
             ],
             'h2' => [
                 'case' => self::OPTION_UPPERCASE,
+                'prepend' => "\n\n",
+                'append' => "\n\n",
             ],
             'h3' => [
                 'case' => self::OPTION_UPPERCASE,
+                'prepend' => "\n\n",
+                'append' => "\n\n",
             ],
             'h4' => [
                 'case' => self::OPTION_UPPERCASE,
+                'prepend' => "\n\n",
+                'append' => "\n\n",
             ],
             'h5' => [
                 'case' => self::OPTION_UPPERCASE,
+                'prepend' => "\n\n",
+                'append' => "\n\n",
             ],
             'h6' => [
                 'case' => self::OPTION_UPPERCASE,
+                'prepend' => "\n\n",
+                'append' => "\n\n",
             ],
             'th' => [
                 'case' => self::OPTION_UPPERCASE,
@@ -557,10 +573,6 @@ class Html2Text
      */
     protected function pregCallback($matches)
     {
-        if (preg_match('/h[123456]/', $matches['element'])) {
-            return $this->convertHeading($matches['value'], $matches['element']);
-        }
-
         $element = mb_strtolower($matches['element']);
 
         switch ($matches['element']) {
@@ -585,6 +597,10 @@ class Html2Text
                 $url = str_replace(' ', '', $matches[3]);
 
                 return $this->buildlinkList($url, $matches[5], $linkOverride);
+        }
+
+        if (preg_match('/h[123456]/', $element)) {
+            return $this->convertElement($matches['value'], $matches['element']);
         }
 
         if (array_key_exists($element, $this->options['elements'])) {
@@ -666,6 +682,10 @@ class Html2Text
             }
 
             $str = trim(implode($chunks));
+
+            if ($options['case'] == self::OPTION_UCFIRST) {
+                $str = ucfirst($str);
+            }
         }
         if (isset($options['replace']) && $options['replace']) {
             if (isset($options['replace'][2])) {
@@ -683,7 +703,6 @@ class Html2Text
         if (isset($options['append']) && $options['append']) {
             $str = $str . $options['append'];
         }
-
 
         return $str;
     }
