@@ -34,7 +34,7 @@ EOT;
       $this->assertEquals($expected, $output);
   }
 
-    public function testPrependingAndAppending() {
+    public function testPrependAndAppend() {
       $html =<<<EOT
   <h1>Should have "AAA " prepended</h1>
   <h4>Should have " BBB" appended</h4>
