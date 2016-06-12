@@ -105,7 +105,7 @@ class Html2Text
     const PATTERN_DD = '/<dd\b[^>]*>(.*?)<\/dd>/i';
     const PATTERN_DT = '/<dt\b[^>]*>(.*?)<\/dt>/i';
     const PATTERN_LI = '/<(?<element>li)\b[^>]*>(?<value>.*?)<\/li>/i';
-    const PATTERN_UNLOSED_LI = '/<li\b[^>]*>/i';
+    const PATTERN_UNCLOSED_LI = '/<li\b[^>]*>/i';
     const PATTERN_HR = '/<hr\b[^>]*>/i';
     const PATTERN_DIV = '/<div\b[^>]*>/i';
     const PATTERN_TABLE = '/(<table\b[^>]*>|<\/table>)/i';
@@ -146,7 +146,7 @@ class Html2Text
         self::PATTERN_DD => " \\1\n",
         self::PATTERN_DT => "\t* \\1",
         self::PATTERN_LI => ['callback' => 'pregCallback'],
-        self::PATTERN_UNLOSED_LI => "\n\t* ",
+        self::PATTERN_UNCLOSED_LI => "\n\t* ",
         self::PATTERN_HR => "\n-------------------------\n",
         self::PATTERN_DIV => "<div>\n",
         self::PATTERN_TABLE => "\n\n",
@@ -611,20 +611,6 @@ class Html2Text
     }
 
     /**
-     * @param $string
-     *
-     * @param $element
-     *
-     * @return string
-     */
-    protected function convertHeading($string, $element)
-    {
-        $string = $this->convertElement($string, $element);
-
-        return "\n\n" . ucfirst($string) . "\n\n";
-    }
-
-    /**
      * @param $element
      *
      * @return null|array
@@ -659,9 +645,12 @@ class Html2Text
     {
         $options = $this->getOptionsForElement($element);
 
+        $str = trim($str);
+
         if (!$options) {
             return $str;
         };
+
 
         if (isset($options['case']) && $options['case'] != self::OPTION_NONE) {
             $mode = self::$caseModeMapping[$options['case']];
@@ -687,6 +676,7 @@ class Html2Text
                 $str = ucfirst($str);
             }
         }
+
         if (isset($options['replace']) && $options['replace']) {
             if (isset($options['replace'][2])) {
                 $delimiter = $options['replace'][2];
