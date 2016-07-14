@@ -244,6 +244,16 @@ class Html2Text
     }
 
     /**
+    * Get the source HTML
+    *
+    * @return string
+    */
+    public function getHtml()
+    {
+        return $this->html;
+    }
+
+    /**
      * Set the source HTML
      *
      * @param string $html HTML source content
