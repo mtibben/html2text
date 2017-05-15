@@ -145,4 +145,18 @@ EOT;
 
         $this->assertEquals($expected, $html2text->getText());
     }
+
+    public function testDoLinksWhenTargetInText()
+    {
+        $html = '<a href="http://example.com">http://example.com</a>';
+        $expected = 'http://example.com';
+
+        $html2text = new Html2Text($html, array('do_links' => 'inline'));
+
+        $this->assertEquals($expected, $html2text->getText());
+
+        $html2text = new Html2Text($html, array('do_links' => 'nextline'));
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
 }

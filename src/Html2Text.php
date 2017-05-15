@@ -434,10 +434,16 @@ class Html2Text
 
             return $display . ' [' . ($index + 1) . ']';
         } elseif ($linkMethod == 'nextline') {
+            if ($url === $display) {
+                return $display;
+            }
             return $display . "\n[" . $url . ']';
         } elseif ($linkMethod == 'bbcode') {
             return sprintf('[url=%s]%s[/url]', $url, $display);
         } else { // link_method defaults to inline
+            if ($url === $display) {
+                return $display;
+            }
             return $display . ' [' . $url . ']';
         }
     }
