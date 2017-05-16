@@ -208,15 +208,16 @@ class Html2Text
      * @type array
      */
     protected $options = array(
-        'do_links' => 'inline', // 'none'
-                                // 'inline' (show links inline)
-                                // 'nextline' (show links on the next line)
-                                // 'table' (if a table of link URLs should be listed after the text.
-                                // 'bbcode' (show links as bbcode)
-
-        'width' => 70,          //  Maximum width of the formatted text, in columns.
-                                //  Set this value to 0 (or less) to ignore word wrapping
-                                //  and not constrain text to a fixed-width column.
+        'do_links' => 'inline',             // 'none'
+                                            // 'inline' (show links inline)
+                                            // 'nextline' (show links on the next line)
+                                            // 'table' (if a table of link URLs should be listed after the text.
+                                            // 'bbcode' (show links as bbcod
+        'width' => 70,                      //  Maximum width of the formatted text, in columns.
+                                            //  Set this value to 0 (or less) to ignore word wrapping
+                                            //  and not constrain text to a fixed-width column.
+        'disable_newlines_prepend' => false //  When set to true there won't be any new lines prepended
+                                            //  in front of paragraphs or headings
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -555,7 +556,11 @@ class Html2Text
                 $para = trim($para);
 
                 // Add trailing newlines for this para.
-                return "\n" . $para . "\n";
+                if ($this->options['disable_newlines_prepend']) {
+                    return $para . "\n";
+                } else {
+                    return "\n" . $para . "\n";
+                }
             case 'br':
                 return "\n";
             case 'b':
@@ -564,7 +569,11 @@ class Html2Text
             case 'th':
                 return $this->toupper("\t\t" . $matches[3] . "\n");
             case 'h':
-                return $this->toupper("\n\n" . $matches[3] . "\n\n");
+                if ($this->options['disable_newlines_prepend']) {
+                    return $this->toupper($matches[3] . "\n\n");
+                } else {
+                    return $this->toupper("\n\n" . $matches[3] . "\n\n");
+                }
             case 'a':
                 // override the link method
                 $linkOverride = null;
