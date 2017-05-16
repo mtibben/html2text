@@ -15,9 +15,9 @@ class ListTest extends \PHPUnit_Framework_TestCase
 EOT;
 
         $expected =<<<'EOT'
- 	* Item 1
- 	* Item 2
- 	* Item 3
+	* Item 1
+	* Item 2
+	* Item 3
 
 
 EOT;
@@ -37,9 +37,9 @@ EOT;
 EOT;
 
         $expected =<<<'EOT'
- 	* Item 1
- 	* Item 2
- 	* Item 3
+	* Item 1
+	* Item 2
+	* Item 3
 
 
 EOT;
@@ -47,4 +47,26 @@ EOT;
         $html2text = new Html2Text($html);
         $this->assertEquals($expected, $html2text->getText());
     }
+
+     public function testUnclosedList()
+     {
+         $html =<<<'EOT'
+<ol>
+  <li>Item 1
+  <li>Item 2
+  <li>Item 3
+</ol>
+EOT;
+
+         $expected =<<<'EOT'
+	* Item 1 
+	* Item 2 
+	* Item 3 
+
+
+EOT;
+
+         $html2text = new Html2Text($html);
+         $this->assertEquals($expected, $html2text->getText());
+     }
 }

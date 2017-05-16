@@ -13,7 +13,7 @@ class DefinitionListTest extends \PHPUnit_Framework_TestCase
 </dl>
 EOT;
         $expected =<<<EOT
- 	* Definition Term: Definition Description 
+	* Definition Term: Definition Description
 
 
 EOT;

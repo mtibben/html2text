@@ -20,11 +20,11 @@ class TableTest extends \PHPUnit_Framework_TestCase
 EOT;
 
         $expected =<<<'EOT'
- 		HEADING 1
- 		Data 1
+		HEADING 1
+		Data 1
 
- 		HEADING 2
- 		Data 2
+		HEADING 2
+		Data 2
 
 
 EOT;
