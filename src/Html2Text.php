@@ -208,15 +208,18 @@ class Html2Text
      * @type array
      */
     protected $options = array(
-        'do_links' => 'inline', // 'none'
-                                // 'inline' (show links inline)
-                                // 'nextline' (show links on the next line)
-                                // 'table' (if a table of link URLs should be listed after the text.
-                                // 'bbcode' (show links as bbcode)
+        'do_links' => 'inline',      // 'none'
+                                     // 'inline' (show links inline)
+                                     // 'nextline' (show links on the next line)
+                                     // 'table' (if a table of link URLs should be listed after the text.
+                                     // 'bbcode' (show links as bbcode)
 
-        'width' => 70,          //  Maximum width of the formatted text, in columns.
-                                //  Set this value to 0 (or less) to ignore word wrapping
-                                //  and not constrain text to a fixed-width column.
+        'width' => 70,               //  Maximum width of the formatted text, in columns.
+                                     //  Set this value to 0 (or less) to ignore word wrapping
+                                     //  and not constrain text to a fixed-width column.
+
+        'link_notation' => 'square', // 'square' my link text [http://my-url]
+                                     // 'round'  my link text (http://my-url)
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -437,15 +440,23 @@ class Html2Text
             if ($url === $display) {
                 return $display;
             }
-            return $display . "\n[" . $url . ']';
+            return $this->displayLink($display, $url, "\n");
         } elseif ($linkMethod == 'bbcode') {
             return sprintf('[url=%s]%s[/url]', $url, $display);
         } else { // link_method defaults to inline
             if ($url === $display) {
                 return $display;
             }
-            return $display . ' [' . $url . ']';
+            return $this->displayLink($display, $url);
         }
+    }
+
+    private function displayLink($display, $url, $separator = ' ')
+    {
+        if ($this->options['link_notation'] === 'round') {
+            return $display . $separator . '(' . $url . ')';
+        }
+        return $display . $separator . '[' . $url . ']';
     }
 
     protected function convertPre(&$text)

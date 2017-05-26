@@ -23,16 +23,37 @@ EOT;
         $this->assertEquals($expected, $output);
     }
 
-    public function testDoLinksInline()
+    /**
+     * @dataProvider doLinksInlineProvider
+     */
+    public function testDoLinksInline(array $options, $expected)
     {
-        $expected =<<<EOT
-Link text [http://example.com]
-EOT;
-
-        $html2text = new Html2Text(self::TEST_HTML, array('do_links' => 'inline'));
+        $options = array_merge(array('do_links' => 'inline'), $options);
+        $html2text = new Html2Text(self::TEST_HTML, $options);
         $output = $html2text->getText();
 
         $this->assertEquals($expected, $output);
+    }
+
+    public function doLinksInlineProvider()
+    {
+        $expected_square = <<<EOT
+Link text [http://example.com]
+EOT;
+        $expected_round = <<<EOT
+Link text (http://example.com)
+EOT;
+
+        return array(
+            // Not passing the option should default to square
+            array(array(), $expected_square),
+            // Passing junk should default to square
+            array(array('link_notation' => 'junk'), $expected_square),
+            // Passing as square should be... square
+            array(array('link_notation' => 'square'), $expected_square),
+            // Passing as round should be round
+            array(array('link_notation' => 'round'), $expected_round),
+        );
     }
 
     public function testDoLinksNone()
@@ -47,17 +68,40 @@ EOT;
         $this->assertEquals($output, $expected);
     }
 
-    public function testDoLinksNextline()
+    /**
+     * @dataProvider doLinksNextlineProvider
+     */
+    public function testDoLinksNextline(array $options, $expected)
     {
-        $expected =<<<EOT
-Link text
-[http://example.com]
-EOT;
+        $options = array_merge(array('do_links' => 'nextline'), $options);
 
-        $html2text = new Html2Text(self::TEST_HTML, array('do_links' => 'nextline'));
+        $html2text = new Html2Text(self::TEST_HTML, $options);
         $output = $html2text->getText();
 
         $this->assertEquals($expected, $output);
+    }
+
+    public function doLinksNextlineProvider()
+    {
+        $expected_square = <<<EOT
+Link text
+[http://example.com]
+EOT;
+        $expected_round = <<<EOT
+Link text
+(http://example.com)
+EOT;
+
+        return array(
+            // Not passing the option should default to square
+            array(array(), $expected_square),
+            // Passing junk should default to square
+            array(array('link_notation' => 'junk'), $expected_square),
+            // Passing as square should be... square
+            array(array('link_notation' => 'square'), $expected_square),
+            // Passing as round should be round
+            array(array('link_notation' => 'round'), $expected_round),
+        );
     }
 
     public function testDoLinksInHtml()
