@@ -41,19 +41,18 @@ class Html2Text
 
     /**
      * List of preg* regular expression patterns to search for,
-     * used in conjunction with $replace.
+     * used in conjunction with $replaceCommon. These are common
+     * patterns for both rich and non-rich text modes.
      *
      * @type array
-     * @see $replace
+     * @see $replaceCommon
      */
-    protected $search = array(
+    protected $searchCommon = array(
         "/\r/",                                           // Non-legal carriage return
         "/[\n\t]+/",                                      // Newlines and tabs
         '/<head\b[^>]*>.*?<\/head>/i',                    // <head>
         '/<script\b[^>]*>.*?<\/script>/i',                // <script>s -- which strip_tags supposedly has problems with
         '/<style\b[^>]*>.*?<\/style>/i',                  // <style>s -- which strip_tags supposedly has problems with
-        '/<i\b[^>]*>(.*?)<\/i>/i',                        // <i>
-        '/<em\b[^>]*>(.*?)<\/em>/i',                      // <em>
         '/(<ul\b[^>]*>|<\/ul>)/i',                        // <ul> and </ul>
         '/(<ol\b[^>]*>|<\/ol>)/i',                        // <ol> and </ol>
         '/(<dl\b[^>]*>|<\/dl>)/i',                        // <dl> and </dl>
@@ -71,19 +70,31 @@ class Html2Text
     );
 
     /**
-     * List of pattern replacements corresponding to patterns searched.
+     * List of preg* regular expression patterns to search for,
+     * used in conjunction with $replaceRich and $replaceNonRich.
      *
      * @type array
-     * @see $search
+     * @see $replaceRich
+     * @see $replaceNonRich
      */
-    protected $replace = array(
-        '',                              // Non-legal carriage return
+    protected $searchSpecial = array(
+        '/<i\b[^>]*>(.*?)<\/i>/i',                        // <i>
+        '/<em\b[^>]*>(.*?)<\/em>/i',                      // <em>
+    );
+
+    /**
+     * List of pattern replacements corresponding to patterns
+     * searched in both rich and non-rich modes.
+     *
+     * @type array
+     * @see $searchCommon
+     */
+    protected $replaceCommon = array(
+       '',                              // Non-legal carriage return
         ' ',                             // Newlines and tabs
         '',                              // <head>
         '',                              // <script>s -- which strip_tags supposedly has problems with
         '',                              // <style>s -- which strip_tags supposedly has problems with
-        '_\\1_',                         // <i>
-        '_\\1_',                         // <em>
         "\n\n",                          // <ul> and </ul>
         "\n\n",                          // <ol> and </ol>
         "\n\n",                          // <dl> and </dl>
@@ -98,6 +109,28 @@ class Html2Text
         "\t\t\\1\n",                     // <td> and </td>
         "",                              // <span class="_html2text_ignore">...</span>
         '[\\2]',                         // <img> with alt tag
+    );
+
+    /**
+     * List of pattern replacements for rich mode.
+     *
+     * @type array
+     * @see $searchSpecial
+     */
+    protected $replaceRich = array(
+        '_\\1_',                         // <i>
+        '_\\1_',                         // <em>
+    );
+
+    /**
+     * List of pattern replacements for non-rich mode.
+     *
+     * @type array
+     * @see $searchSpecial
+     */
+    protected $replaceNonRich = array(
+        '\\1',                         // <i>
+        '\\1',                         // <em>
     );
 
     /**
@@ -217,6 +250,8 @@ class Html2Text
         'width' => 70,          //  Maximum width of the formatted text, in columns.
                                 //  Set this value to 0 (or less) to ignore word wrapping
                                 //  and not constrain text to a fixed-width column.
+
+        'richText' => true,     //  Use rich text, like _this_ for italics and so on.
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -366,7 +401,12 @@ class Html2Text
     {
         $this->convertBlockquotes($text);
         $this->convertPre($text);
-        $text = preg_replace($this->search, $this->replace, $text);
+        $text = preg_replace($this->searchCommon, $this->replaceCommon, $text);
+        if ($this->options['richText']) {
+            $text = preg_replace($this->searchSpecial, $this->replaceRich, $text);
+        } else {
+            $text = preg_replace($this->searchSpecial, $this->replaceNonRich, $text);
+        }
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
         $text = strip_tags($text);
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
@@ -560,11 +600,25 @@ class Html2Text
                 return "\n";
             case 'b':
             case 'strong':
-                return $this->toupper($matches[3]);
+                if ($this->options['richText']) {
+                    return $this->toupper($matches[3]);
+                } else {
+                    return $matches[3];
+                }
             case 'th':
-                return $this->toupper("\t\t" . $matches[3] . "\n");
+                $text = "\t\t" . $matches[3] . "\n";
+                if ($this->options['richText']) {
+                    return $this->toupper($text);
+                } else {
+                    return $text;
+                }
             case 'h':
-                return $this->toupper("\n\n" . $matches[3] . "\n\n");
+                $text = "\n\n" . $matches[3] . "\n\n";
+                if ($this->options['richText']) {
+                    return $this->toupper($text);
+                } else {
+                    return $text;
+                }
             case 'a':
                 // override the link method
                 $linkOverride = null;
