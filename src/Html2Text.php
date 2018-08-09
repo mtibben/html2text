@@ -256,18 +256,6 @@ class Html2Text
     }
 
     /**
-     * @deprecated
-     */
-    public function set_html($html, $from_file = false)
-    {
-        if ($from_file) {
-            throw new \InvalidArgumentException("Argument from_file no longer supported");
-        }
-
-        $this->setHtml($html);
-    }
-
-    /**
      * Returns the text, converted from HTML.
      *
      * @return string
@@ -282,30 +270,6 @@ class Html2Text
     }
 
     /**
-     * @deprecated
-     */
-    public function get_text()
-    {
-        return $this->getText();
-    }
-
-    /**
-     * @deprecated
-     */
-    public function print_text()
-    {
-        print $this->getText();
-    }
-
-    /**
-     * @deprecated
-     */
-    public function p()
-    {
-        $this->print_text();
-    }
-
-    /**
      * Sets a base URL to handle relative links.
      *
      * @param string $baseurl
@@ -313,14 +277,6 @@ class Html2Text
     public function setBaseUrl($baseurl)
     {
         $this->baseurl = $baseurl;
-    }
-
-    /**
-     * @deprecated
-     */
-    public function set_base_url($baseurl)
-    {
-        $this->setBaseUrl($baseurl);
     }
 
     protected function convert()
