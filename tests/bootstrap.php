@@ -8,4 +8,3 @@
  * not to use Composer.
  */
 require('src/Html2Text.php');
-?>

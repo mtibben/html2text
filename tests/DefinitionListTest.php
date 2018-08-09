@@ -2,17 +2,19 @@
 
 namespace Html2Text;
 
-class DefinitionListTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class DefinitionListTest extends TestCase
 {
     public function testDefinitionList()
     {
-        $html =<<< EOT
+        $html = <<< EOT
 <dl>
   <dt>Definition Term:</dt>
   <dd>Definition Description<dd>
 </dl>
 EOT;
-        $expected =<<<EOT
+        $expected = <<<EOT
  	* Definition Term: Definition Description 
 
 

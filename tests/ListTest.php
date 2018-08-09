@@ -2,11 +2,13 @@
 
 namespace Html2Text;
 
-class ListTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ListTest extends TestCase
 {
     public function testList()
     {
-        $html =<<<'EOT'
+        $html = <<<'EOT'
 <ul>
   <li>Item 1</li>
   <li>Item 2</li>
@@ -14,7 +16,7 @@ class ListTest extends \PHPUnit_Framework_TestCase
 </ul>
 EOT;
 
-        $expected =<<<'EOT'
+        $expected = <<<'EOT'
  	* Item 1
  	* Item 2
  	* Item 3
@@ -28,7 +30,7 @@ EOT;
 
     public function testOrderedList()
     {
-        $html =<<<'EOT'
+        $html = <<<'EOT'
 <ol>
   <li>Item 1</li>
   <li>Item 2</li>
@@ -36,7 +38,7 @@ EOT;
 </ol>
 EOT;
 
-        $expected =<<<'EOT'
+        $expected = <<<'EOT'
  	* Item 1
  	* Item 2
  	* Item 3

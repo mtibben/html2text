@@ -2,7 +2,9 @@
 
 namespace Html2Text;
 
-class HtmlCharsTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class HtmlCharsTest extends TestCase
 {
     public function testLaquoAndRaquo()
     {

@@ -2,11 +2,13 @@
 
 namespace Html2Text;
 
-class TableTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class TableTest extends TestCase
 {
     public function testTable()
     {
-        $html =<<<'EOT'
+        $html = <<<'EOT'
 <table>
   <tr>
     <th>Heading 1</th>
@@ -19,7 +21,7 @@ class TableTest extends \PHPUnit_Framework_TestCase
 </table>
 EOT;
 
-        $expected =<<<'EOT'
+        $expected = <<<'EOT'
  		HEADING 1
  		Data 1
 

@@ -2,15 +2,17 @@
 
 namespace Html2Text;
 
-class StrToUpperTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class StrToUpperTest extends TestCase
 {
     public function testToUpper()
     {
-    	$html =<<<EOT
+        $html = <<<EOT
 <h1>Will be UTF-8 (äöüèéилčλ) uppercased</h1>
 <p>Will remain lowercased</p>
 EOT;
-        $expected =<<<EOT
+        $expected = <<<EOT
 WILL BE UTF-8 (ÄÖÜÈÉИЛČΛ) UPPERCASED
 
 Will remain lowercased

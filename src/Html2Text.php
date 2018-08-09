@@ -44,9 +44,9 @@ class Html2Text
      * used in conjunction with $replace.
      *
      * @type array
-     * @see $replace
+     * @see Html2Text::replace
      */
-    protected $search = array(
+    const search = array(
         "/\r/",                                           // Non-legal carriage return
         "/[\n\t]+/",                                      // Newlines and tabs
         '/<head\b[^>]*>.*?<\/head>/i',                    // <head>
@@ -74,9 +74,9 @@ class Html2Text
      * List of pattern replacements corresponding to patterns searched.
      *
      * @type array
-     * @see $search
+     * @see Html2Text::search
      */
-    protected $replace = array(
+    const replace = array(
         '',                              // Non-legal carriage return
         ' ',                             // Newlines and tabs
         '',                              // <head>
@@ -211,33 +211,22 @@ class Html2Text
      */
     protected $options = array(
         'do_links' => 'inline', // 'none'
-                                // 'inline' (show links inline)
-                                // 'nextline' (show links on the next line)
-                                // 'table' (if a table of link URLs should be listed after the text.
-                                // 'bbcode' (show links as bbcode)
+        // 'inline' (show links inline)
+        // 'nextline' (show links on the next line)
+        // 'table' (if a table of link URLs should be listed after the text.
+        // 'bbcode' (show links as bbcode)
 
         'width' => 70,          //  Maximum width of the formatted text, in columns.
-                                //  Set this value to 0 (or less) to ignore word wrapping
-                                //  and not constrain text to a fixed-width column.
+        //  Set this value to 0 (or less) to ignore word wrapping
+        //  and not constrain text to a fixed-width column.
     );
 
-    private function legacyConstruct($html = '', $fromFile = false, array $options = array())
-    {
-        $this->set_html($html, $fromFile);
-        $this->options = array_merge($this->options, $options);
-    }
-
     /**
-     * @param string $html    Source HTML
-     * @param array  $options Set configuration options
+     * @param string $html Source HTML
+     * @param array $options Set configuration options
      */
     public function __construct($html = '', $options = array())
     {
-        // for backwards compatibility
-        if (!is_array($options)) {
-            return call_user_func_array(array($this, 'legacyConstruct'), func_get_args());
-        }
-
         $this->html = $html;
         $this->options = array_merge($this->options, $options);
         $this->htmlFuncFlags = (PHP_VERSION_ID < 50400)
@@ -246,10 +235,10 @@ class Html2Text
     }
 
     /**
-    * Get the source HTML
-    *
-    * @return string
-    */
+     * Get the source HTML
+     *
+     * @return string
+     */
     public function getHtml()
     {
         return $this->html;
@@ -267,18 +256,6 @@ class Html2Text
     }
 
     /**
-     * @deprecated
-     */
-    public function set_html($html, $from_file = false)
-    {
-        if ($from_file) {
-            throw new \InvalidArgumentException("Argument from_file no longer supported");
-        }
-
-        return $this->setHtml($html);
-    }
-
-    /**
      * Returns the text, converted from HTML.
      *
      * @return string
@@ -293,30 +270,6 @@ class Html2Text
     }
 
     /**
-     * @deprecated
-     */
-    public function get_text()
-    {
-        return $this->getText();
-    }
-
-    /**
-     * @deprecated
-     */
-    public function print_text()
-    {
-        print $this->getText();
-    }
-
-    /**
-     * @deprecated
-     */
-    public function p()
-    {
-        return $this->print_text();
-    }
-
-    /**
      * Sets a base URL to handle relative links.
      *
      * @param string $baseurl
@@ -326,22 +279,14 @@ class Html2Text
         $this->baseurl = $baseurl;
     }
 
-    /**
-     * @deprecated
-     */
-    public function set_base_url($baseurl)
-    {
-        return $this->setBaseUrl($baseurl);
-    }
-
     protected function convert()
     {
-       $origEncoding = mb_internal_encoding();
-       mb_internal_encoding(self::ENCODING);
+        $origEncoding = mb_internal_encoding();
+        mb_internal_encoding(self::ENCODING);
 
-       $this->doConvert();
+        $this->doConvert();
 
-       mb_internal_encoding($origEncoding);
+        mb_internal_encoding($origEncoding);
     }
 
     protected function doConvert()
@@ -368,7 +313,7 @@ class Html2Text
     {
         $this->convertBlockquotes($text);
         $this->convertPre($text);
-        $text = preg_replace($this->search, $this->replace, $text);
+        $text = preg_replace(self::search, self::replace, $text);
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
         $text = strip_tags($text);
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
@@ -401,15 +346,15 @@ class Html2Text
      * appeared. Also makes an effort at identifying and handling absolute
      * and relative links.
      *
-     * @param  string $link          URL of the link
-     * @param  string $display       Part of the text to associate number with
-     * @param  null   $linkOverride
+     * @param  string $link URL of the link
+     * @param  string $display Part of the text to associate number with
+     * @param  null $linkOverride
      * @return string
      */
     protected function buildlinkList($link, $display, $linkOverride = null)
     {
-        $linkMethod = ($linkOverride) ? $linkOverride : $this->options['do_links'];
-        if ($linkMethod == 'none') {
+        $linkMethod = $linkOverride ?: $this->options['do_links'];
+        if ('none' === $linkMethod) {
             return $display;
         }
 
@@ -422,25 +367,25 @@ class Html2Text
             $url = $link;
         } else {
             $url = $this->baseurl;
-            if (mb_substr($link, 0, 1) != '/') {
+            if (0 !== mb_strpos($link, '/')) {
                 $url .= '/';
             }
             $url .= $link;
         }
 
-        if ($linkMethod == 'table') {
+        if ($linkMethod === 'table') {
             if (($index = array_search($url, $this->linkList)) === false) {
                 $index = count($this->linkList);
                 $this->linkList[] = $url;
             }
 
             return $display . ' [' . ($index + 1) . ']';
-        } elseif ($linkMethod == 'nextline') {
+        } elseif ($linkMethod === 'nextline') {
             if ($url === $display) {
                 return $display;
             }
             return $display . "\n[" . $url . ']';
-        } elseif ($linkMethod == 'bbcode') {
+        } elseif ($linkMethod === 'bbcode') {
             return sprintf('[url=%s]%s[/url]', $url, $display);
         } else { // link_method defaults to inline
             if ($url === $display) {
@@ -498,7 +443,7 @@ class Html2Text
             $diff = 0;
             foreach ($matches[0] as $m) {
                 $m[1] = mb_strlen(substr($originalText, 0, $m[1]));
-                if ($m[0][0] == '<' && $m[0][1] == '/') {
+                if ($m[0][0] === '<' && $m[0][1] === '/') {
                     $level--;
                     if ($level < 0) {
                         $level = 0; // malformed HTML: go to next blockquote
@@ -512,7 +457,9 @@ class Html2Text
 
                         // Set text width
                         $pWidth = $this->options['width'];
-                        if ($this->options['width'] > 0) $this->options['width'] -= 2;
+                        if ($this->options['width'] > 0) {
+                            $this->options['width'] -= 2;
+                        }
                         // Convert blockquote content
                         $body = trim($body);
                         $this->converter($body);
@@ -543,7 +490,7 @@ class Html2Text
     /**
      * Callback function for preg_replace_callback use.
      *
-     * @param  array  $matches PREG matches
+     * @param  array $matches PREG matches
      * @return string
      */
     protected function pregCallback($matches)
@@ -585,10 +532,11 @@ class Html2Text
     /**
      * Callback function for preg_replace_callback use in PRE content handler.
      *
-     * @param  array  $matches PREG matches
+     * @param  array $matches PREG matches
      * @return string
      */
-    protected function pregPreCallback(/** @noinspection PhpUnusedParameterInspection */ $matches)
+    protected function pregPreCallback(/** @noinspection PhpUnusedParameterInspection */
+        $matches)
     {
         return $this->preContent;
     }
@@ -606,7 +554,7 @@ class Html2Text
 
         // convert toupper only the text between HTML tags
         foreach ($chunks as $i => $chunk) {
-            if ($chunk[0] != '<') {
+            if ($chunk[0] !== '<') {
                 $chunks[$i] = $this->strtoupper($chunk);
             }
         }

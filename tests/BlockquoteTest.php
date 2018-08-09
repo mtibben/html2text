@@ -2,7 +2,9 @@
 
 namespace Html2Text;
 
-class BlockquoteTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class BlockquoteTest extends TestCase
 {
     public function blockquoteDataProvider()
     {
@@ -20,7 +22,7 @@ HTML symbols &amp;
 </blockquote>
 <p>After</p>
 EOT
-                ,
+            ,
                 'expected' => <<<EOT
 Before
 
@@ -29,13 +31,13 @@ Before
 After
 
 EOT
-                ,
+            ,
             ),
             'Multiple blockquotes in text' => array(
                 'html' => <<<EOF
 <p>Highlights from today&rsquo;s <strong>Newlyhired Game</strong>:</p><blockquote><p><strong>Sean:</strong> What came first, Blake&rsquo;s first <em>Chief Architect position</em> or Blake&rsquo;s first <em>girlfriend</em>?</p> </blockquote> <blockquote> <p><strong>Sean:</strong> Devin, Bryan spent almost five years of his life slaving away for this vampire squid wrapped around the face of humanity&hellip;<br/><strong>Devin:</strong> Goldman Sachs?<br/><strong>Sean:</strong> Correct!</p> </blockquote> <blockquote> <p><strong>Sean:</strong> What was the name of the girl Zhu took to prom three months ago?<br/><strong>John:</strong> What?<br/><strong>Derek (from the audience):</strong> Destiny!<br/><strong>Zhu:</strong> Her name is Jolene. She&rsquo;s nice. I like her.</p></blockquote><p>I think the audience is winning.&nbsp; - Derek</p>
 EOF
-                ,
+            ,
                 'expected' => <<<EOF
 Highlights from today’s NEWLYHIRED GAME:
 
@@ -64,7 +66,7 @@ EOF
 <blockquote>goodbye</blockquote>
 
 EOF
-                ,
+            ,
                 'expected' => <<<EOF
 “Hello” 
 
@@ -78,7 +80,8 @@ EOF
     /**
      * @dataProvider blockquoteDataProvider
      */
-    public function testBlockquote($html, $expected) {
+    public function testBlockquote($html, $expected)
+    {
         $html2text = new Html2Text($html);
         $this->assertEquals($expected, $html2text->getText());
     }

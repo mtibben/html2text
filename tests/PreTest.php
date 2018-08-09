@@ -2,7 +2,9 @@
 
 namespace Html2Text;
 
-class PreTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class PreTest extends TestCase
 {
     public function preDataProvider()
     {
@@ -20,7 +22,7 @@ HTML symbols &amp;
 </pre>
 <p>After</p>
 EOT
-                ,
+            ,
                 'expected' => <<<EOT
 Before
 
@@ -31,7 +33,7 @@ HTML symbols &
 After
 
 EOT
-                ,
+            ,
             ),
             'br in pre' => array(
                 'html' => <<<EOT
@@ -39,7 +41,7 @@ EOT
 some<br />  indented<br />  text<br />    on<br />    several<br />  lines<br />
 </pre>
 EOT
-                ,
+            ,
                 'expected' => <<<EOT
 some
   indented
@@ -50,7 +52,7 @@ some
 
 
 EOT
-                ,
+            ,
             ),
         );
     }

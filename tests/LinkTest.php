@@ -2,13 +2,15 @@
 
 namespace Html2Text;
 
-class LinkTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class LinkTest extends TestCase
 {
     const TEST_HTML = '<a href="http://example.com">Link text</a>';
 
     public function testDoLinksAfter()
     {
-        $expected =<<<EOT
+        $expected = <<<EOT
 Link text [1]
 
 Links:
@@ -25,7 +27,7 @@ EOT;
 
     public function testDoLinksInline()
     {
-        $expected =<<<EOT
+        $expected = <<<EOT
 Link text [http://example.com]
 EOT;
 
@@ -37,7 +39,7 @@ EOT;
 
     public function testDoLinksNone()
     {
-        $expected =<<<EOT
+        $expected = <<<EOT
 Link text
 EOT;
 
@@ -49,7 +51,7 @@ EOT;
 
     public function testDoLinksNextline()
     {
-        $expected =<<<EOT
+        $expected = <<<EOT
 Link text
 [http://example.com]
 EOT;
@@ -62,13 +64,13 @@ EOT;
 
     public function testDoLinksInHtml()
     {
-        $html =<<<EOT
+        $html = <<<EOT
 <p><a href="http://example.com" class="_html2text_link_none">Link text</a></p>
 <p><a href="http://example.com" class="_html2text_link_inline">Link text</a></p>
 <p><a href="http://example.com" class="_html2text_link_nextline">Link text</a></p>
 EOT;
 
-        $expected =<<<EOT
+        $expected = <<<EOT
 Link text
 
 Link text [http://example.com]

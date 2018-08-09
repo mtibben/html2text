@@ -2,15 +2,17 @@
 
 namespace Html2Text;
 
-class SpanTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class SpanTest extends TestCase
 {
 
     public function testIgnoreSpans()
     {
-    	$html =<<< EOT
+        $html = <<< EOT
 Outside<span class="_html2text_ignore">Inside</span>
 EOT;
-        $expected =<<<EOT
+        $expected = <<<EOT
 Outside
 EOT;
 
