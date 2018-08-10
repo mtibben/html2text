@@ -4,6 +4,12 @@ A PHP library for converting HTML to formatted plain text.
 
 [![Build Status](https://travis-ci.org/mtibben/html2text.png?branch=master)](https://travis-ci.org/mtibben/html2text)
 
+## Installing
+
+```
+composer require html2text/html2text
+```
+
 ## Basic Usage
 ```php
 $html = new \Html2Text\Html2Text('Hello, &quot;<b>world</b>&quot;');
