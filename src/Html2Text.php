@@ -95,7 +95,7 @@ class Html2Text
         "<div>\n",                       // <div>
         "\n\n",                          // <table> and </table>
         "\n",                            // <tr> and </tr>
-        "\t\t\\1\n",                     // <td> and </td>
+        "\t\t\\1",                     // <td> and </td>
         "",                              // <span class="_html2text_ignore">...</span>
         '[\\2]',                         // <img> with alt tag
     );
