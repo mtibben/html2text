@@ -54,6 +54,7 @@ class Html2Text
         '/<style\b[^>]*>.*?<\/style>/i',                  // <style>s -- which strip_tags supposedly has problems with
         '/<i\b[^>]*>(.*?)<\/i>/i',                        // <i>
         '/<em\b[^>]*>(.*?)<\/em>/i',                      // <em>
+        '/<ins\b[^>]*>(.*?)<\/ins>/i',                    // <ins>
         '/(<ul\b[^>]*>|<\/ul>)/i',                        // <ul> and </ul>
         '/(<ol\b[^>]*>|<\/ol>)/i',                        // <ol> and </ol>
         '/(<dl\b[^>]*>|<\/dl>)/i',                        // <dl> and </dl>
@@ -84,6 +85,7 @@ class Html2Text
         '',                              // <style>s -- which strip_tags supposedly has problems with
         '_\\1_',                         // <i>
         '_\\1_',                         // <em>
+        '_\\1_',                         // <ins>
         "\n\n",                          // <ul> and </ul>
         "\n\n",                          // <ol> and </ol>
         "\n\n",                          // <dl> and </dl>
@@ -141,6 +143,7 @@ class Html2Text
         '/<(br)[^>]*>[ ]*/i',                                    // <br> with leading whitespace after the newline.
         '/<(b)( [^>]*)?>(.*?)<\/b>/i',                           // <b>
         '/<(strong)( [^>]*)?>(.*?)<\/strong>/i',                 // <strong>
+        '/<(del)( [^>]*)?>(.*?)<\/del>/i',                       // <del>
         '/<(th)( [^>]*)?>(.*?)<\/th>/i',                         // <th> and </th>
         '/<(a) [^>]*href=("|\')([^"\']+)\2([^>]*)>(.*?)<\/a>/i'  // <a href="">
     );
@@ -219,6 +222,8 @@ class Html2Text
         'width' => 70,          //  Maximum width of the formatted text, in columns.
                                 //  Set this value to 0 (or less) to ignore word wrapping
                                 //  and not constrain text to a fixed-width column.
+
+        'strikethough_del' => false,  // use a combining character so that <del> appears struck-through.
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -563,6 +568,8 @@ class Html2Text
             case 'b':
             case 'strong':
                 return $this->toupper($matches[3]);
+            case 'del':
+                return $this->tostrike($matches[3]);
             case 'th':
                 return $this->toupper("\t\t" . $matches[3] . "\n");
             case 'h':
@@ -627,5 +634,25 @@ class Html2Text
         $str = htmlspecialchars($str, $this->htmlFuncFlags, self::ENCODING);
 
         return $str;
+    }
+
+    /**
+     * Helper function for DEL conversion.
+     *
+     * @param  string $text HTML content
+     * @return string Converted text
+     */
+    protected function tostrike($str)
+    {
+        if (self::ENCODING != 'UTF-8' || $this->options['strikethough_del'] !== true) {
+            return $str;
+        }
+        $rtn = '';
+        for ($i = 0; $i < mb_strlen($str); $i++) {
+            $chr = mb_substr($str, $i, 1);
+            $combiningChr = chr(0xC0 | 0x336 >> 6). chr(0x80 | 0x336 & 0x3F);
+            $rtn .= $chr . $combiningChr;
+        }
+        return $rtn;
     }
 }
