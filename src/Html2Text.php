@@ -54,8 +54,6 @@ class Html2Text
         '/<style\b[^>]*>.*?<\/style>/i',                  // <style>s -- which strip_tags supposedly has problems with
         '/<i\b[^>]*>(.*?)<\/i>/i',                        // <i>
         '/<em\b[^>]*>(.*?)<\/em>/i',                      // <em>
-        '/(<ul\b[^>]*>|<\/ul>)/i',                        // <ul> and </ul>
-        '/(<ol\b[^>]*>|<\/ol>)/i',                        // <ol> and </ol>
         '/(<dl\b[^>]*>|<\/dl>)/i',                        // <dl> and </dl>
         '/<li\b[^>]*>(.*?)<\/li>/i',                      // <li> and </li>
         '/<dd\b[^>]*>(.*?)<\/dd>/i',                      // <dd> and </dd>
@@ -84,13 +82,11 @@ class Html2Text
         '',                              // <style>s -- which strip_tags supposedly has problems with
         '_\\1_',                         // <i>
         '_\\1_',                         // <em>
-        "\n\n",                          // <ul> and </ul>
-        "\n\n",                          // <ol> and </ol>
         "\n\n",                          // <dl> and </dl>
-        "\t* \\1\n",                     // <li> and </li>
+        "* \\1\n",                       // <li> and </li>
         " \\1\n",                        // <dd> and </dd>
         "\t* \\1",                       // <dt> and </dt>
-        "\n\t* ",                        // <li>
+        "\n* ",                          // <li>
         "\n-------------------------\n", // <hr>
         "<div>\n",                       // <div>
         "\n\n",                          // <table> and </table>
@@ -367,6 +363,7 @@ class Html2Text
     protected function converter(&$text)
     {
         $this->convertBlockquotes($text);
+        $this->convertLists($text);
         $this->convertPre($text);
         $text = preg_replace($this->search, $this->replace, $text);
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
@@ -484,13 +481,28 @@ class Html2Text
     }
 
     /**
+     * Helper function for UL and OL body conversion.
+     *
+     * @param string $text HTML content
+     */
+    protected function convertLists(&$text)
+    {
+        $this->convertNested($text, '[uo]l', '/((^|\n)>*) ?/', "\\1\t");
+    }
+
+    /**
      * Helper function for BLOCKQUOTE body conversion.
      *
      * @param string $text HTML content
      */
     protected function convertBlockquotes(&$text)
     {
-        if (preg_match_all('/<\/*blockquote[^>]*>/i', $text, $matches, PREG_OFFSET_CAPTURE)) {
+        $this->convertNested($text, 'blockquote', '/((^|\n)>*)/', '\\1> ');
+    }
+
+    private function convertNested(&$text, $tag, $find, $replace)
+    {
+        if (preg_match_all('/<\/*' . $tag . '[^>]*>/i', $text, $matches, PREG_OFFSET_CAPTURE)) {
             $originalText = $text;
             $start = 0;
             $taglen = 0;
@@ -517,7 +529,7 @@ class Html2Text
                         $body = trim($body);
                         $this->converter($body);
                         // Add citation markers and create PRE block
-                        $body = preg_replace('/((^|\n)>*)/', '\\1> ', trim($body));
+                        $body = preg_replace($find, $replace, trim($body));
                         $body = '<pre>' . htmlspecialchars($body, $this->htmlFuncFlags, self::ENCODING) . '</pre>';
                         // Re-set text width
                         $this->options['width'] = $pWidth;

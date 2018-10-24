@@ -14,13 +14,7 @@ class ListTest extends \PHPUnit_Framework_TestCase
 </ul>
 EOT;
 
-        $expected =<<<'EOT'
- 	* Item 1
- 	* Item 2
- 	* Item 3
-
-
-EOT;
+        $expected = "    * Item 1\n    * Item 2\n    * Item 3\n";
 
         $html2text = new Html2Text($html);
         $this->assertEquals($expected, $html2text->getText());
@@ -36,13 +30,28 @@ EOT;
 </ol>
 EOT;
 
-        $expected =<<<'EOT'
- 	* Item 1
- 	* Item 2
- 	* Item 3
+        $expected = "    * Item 1\n    * Item 2\n    * Item 3\n";
 
+        $html2text = new Html2Text($html);
+        $this->assertEquals($expected, $html2text->getText());
+    }
 
+    public function testNestedList()
+    {
+        $html =<<<'EOT'
+<ul>
+  <li>Coffee</li>
+  <li>Tea
+    <ul>
+      <li>Black tea</li>
+      <li>Green tea</li>
+    </ul>
+  </li>
+  <li>Milk</li>
+</ul>
 EOT;
+
+        $expected = "    * Coffee\n    * Tea \n    \n        * Black tea\n        * Green tea\n    \n    * Milk\n";
 
         $html2text = new Html2Text($html);
         $this->assertEquals($expected, $html2text->getText());
