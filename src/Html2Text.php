@@ -636,7 +636,7 @@ class Html2Text
     {
         $str = html_entity_decode($str, $this->htmlFuncFlags, $this->charset);
         $str = mb_strtoupper($str);
-        $str = htmlspecialchars($str, $this->htmlFuncFlags, $this->charset));
+        $str = htmlspecialchars($str, $this->htmlFuncFlags, $this->charset);
 
         return $str;
     }
