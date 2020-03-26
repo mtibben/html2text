@@ -2,7 +2,7 @@
 
 namespace Html2Text;
 
-class StrToUpperTest extends \PHPUnit_Framework_TestCase
+class HeaderTest extends \PHPUnit_Framework_TestCase
 {
     public function testToUpper()
     {
