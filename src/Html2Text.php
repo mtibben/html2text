@@ -40,13 +40,6 @@ class Html2Text
     protected $text;
 
     /**
-     * Target character encoding for output text
-     *
-     * @var string $charset
-     */
-    protected $charset = self::ENCODING;
-
-    /**
      * List of preg* regular expression patterns to search for,
      * used in conjunction with $replace.
      *
@@ -347,7 +340,7 @@ class Html2Text
     protected function convert()
     {
        $origEncoding = mb_internal_encoding();
-       mb_internal_encoding($this->charset);
+       mb_internal_encoding(self::ENCODING);
 
        $this->doConvert();
 
@@ -639,9 +632,9 @@ class Html2Text
      */
     protected function strtoupper($str)
     {
-        $str = html_entity_decode($str, $this->htmlFuncFlags, $this->charset);
+        $str = html_entity_decode($str, $this->htmlFuncFlags, self::ENCODING);
         $str = mb_strtoupper($str);
-        $str = htmlspecialchars($str, $this->htmlFuncFlags, $this->charset);
+        $str = htmlspecialchars($str, $this->htmlFuncFlags, self::ENCODING);
 
         return $str;
     }
@@ -654,9 +647,6 @@ class Html2Text
      */
     protected function tostrike($str)
     {
-        if (self::ENCODING != 'UTF-8') {
-            return $str;
-        }
         $rtn = '';
         for ($i = 0; $i < mb_strlen($str); $i++) {
             $chr = mb_substr($str, $i, 1);
