@@ -229,8 +229,6 @@ class Html2Text
         'width' => 70,          //  Maximum width of the formatted text, in columns.
                                 //  Set this value to 0 (or less) to ignore word wrapping
                                 //  and not constrain text to a fixed-width column.
-
-        'strikethough_del' => false,  // use a combining character so that <del> appears struck-through.
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -656,7 +654,7 @@ class Html2Text
      */
     protected function tostrike($str)
     {
-        if (self::ENCODING != 'UTF-8' || $this->options['strikethough_del'] !== true) {
+        if (self::ENCODING != 'UTF-8') {
             return $str;
         }
         $rtn = '';
