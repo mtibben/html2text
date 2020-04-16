@@ -28,22 +28,29 @@ class Html2Text
     /**
      * Contains the HTML content to convert.
      *
-     * @type string
+     * @var string $html
      */
     protected $html;
 
     /**
      * Contains the converted, formatted text.
      *
-     * @type string
+     * @var string $text
      */
     protected $text;
+
+    /**
+     * Target character encoding for output text
+     *
+     * @var string $charset
+     */
+    protected $charset = self::ENCODING;
 
     /**
      * List of preg* regular expression patterns to search for,
      * used in conjunction with $replace.
      *
-     * @type array
+     * @var array $search
      * @see $replace
      */
     protected $search = array(
@@ -73,7 +80,7 @@ class Html2Text
     /**
      * List of pattern replacements corresponding to patterns searched.
      *
-     * @type array
+     * @var array $replace
      * @see $search
      */
     protected $replace = array(
@@ -104,7 +111,7 @@ class Html2Text
      * List of preg* regular expression patterns to search for,
      * used in conjunction with $entReplace.
      *
-     * @type array
+     * @var array $entSearch
      * @see $entReplace
      */
     protected $entSearch = array(
@@ -118,7 +125,7 @@ class Html2Text
     /**
      * List of pattern replacements corresponding to patterns searched.
      *
-     * @type array
+     * @var array $entReplace
      * @see $entSearch
      */
     protected $entReplace = array(
@@ -133,7 +140,7 @@ class Html2Text
      * List of preg* regular expression patterns to search for
      * and replace using callback function.
      *
-     * @type array
+     * @var array $callbackSearch
      */
     protected $callbackSearch = array(
         '/<(h)[123456]( [^>]*)?>(.*?)<\/h[123456]>/i',           // h1 - h6
@@ -149,7 +156,7 @@ class Html2Text
      * List of preg* regular expression patterns to search for in PRE body,
      * used in conjunction with $preReplace.
      *
-     * @type array
+     * @var array $preSearch
      * @see $preReplace
      */
     protected $preSearch = array(
@@ -163,7 +170,7 @@ class Html2Text
     /**
      * List of pattern replacements corresponding to patterns searched for PRE body.
      *
-     * @type array
+     * @var array $preReplace
      * @see $preSearch
      */
     protected $preReplace = array(
@@ -177,21 +184,21 @@ class Html2Text
     /**
      * Temporary workspace used during PRE processing.
      *
-     * @type string
+     * @var string $preContent
      */
     protected $preContent = '';
 
     /**
      * Contains the base URL that relative links should resolve to.
      *
-     * @type string
+     * @var string $baseurl
      */
     protected $baseurl = '';
 
     /**
      * Indicates whether content in the $html variable has been converted yet.
      *
-     * @type boolean
+     * @var boolean $converted
      * @see $html, $text
      */
     protected $converted = false;
@@ -199,7 +206,7 @@ class Html2Text
     /**
      * Contains URL addresses from links to be rendered in plain text.
      *
-     * @type array
+     * @var array $linkList
      * @see buildlinkList()
      */
     protected $linkList = array();
@@ -207,7 +214,7 @@ class Html2Text
     /**
      * Various configuration options (able to be set in the constructor)
      *
-     * @type array
+     * @var array $options
      */
     protected $options = array(
         'do_links' => 'inline', // 'none'
@@ -281,7 +288,7 @@ class Html2Text
     /**
      * Returns the text, converted from HTML.
      *
-     * @return string
+     * @return string Plain text
      */
     public function getText()
     {
@@ -337,7 +344,7 @@ class Html2Text
     protected function convert()
     {
        $origEncoding = mb_internal_encoding();
-       mb_internal_encoding(self::ENCODING);
+       mb_internal_encoding($this->charset);
 
        $this->doConvert();
 
@@ -450,6 +457,11 @@ class Html2Text
         }
     }
 
+    /**
+     * Helper function for PRE body conversion.
+     *
+     * @param string &$text HTML content
+     */
     protected function convertPre(&$text)
     {
         // get the content of PRE element
@@ -486,7 +498,7 @@ class Html2Text
     /**
      * Helper function for BLOCKQUOTE body conversion.
      *
-     * @param string $text HTML content
+     * @param string &$text HTML content
      */
     protected function convertBlockquotes(&$text)
     {
@@ -622,9 +634,9 @@ class Html2Text
      */
     protected function strtoupper($str)
     {
-        $str = html_entity_decode($str, $this->htmlFuncFlags, self::ENCODING);
+        $str = html_entity_decode($str, $this->htmlFuncFlags, $this->charset);
         $str = mb_strtoupper($str);
-        $str = htmlspecialchars($str, $this->htmlFuncFlags, self::ENCODING);
+        $str = htmlspecialchars($str, $this->htmlFuncFlags, $this->charset);
 
         return $str;
     }
