@@ -358,7 +358,7 @@ class Html2Text
         if ($this->linkList) {
             $text .= "\n\nLinks:\n------\n";
             foreach ($this->linkList as $i => $url) {
-                $text .= '[' . ($i + 1) . '] ' . $url . "\n";
+                $text .= '[' . ($i + 1) . '] ' . html_entity_decode($url, $this->htmlFuncFlags, self::ENCODING) . "\n";
             }
         }
 
