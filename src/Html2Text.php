@@ -68,7 +68,7 @@ class Html2Text
         '/(<tr\b[^>]*>|<\/tr>)/i',                        // <tr> and </tr>
         '/<td\b[^>]*>(.*?)<\/td>/i',                      // <td> and </td>
         '/<span class="_html2text_ignore">.+?<\/span>/i', // <span class="_html2text_ignore">...</span>
-        '/<(img)\b[^>]*alt=\"([^>"]+)\"[^>]*>/i',         // <img> with alt tag
+        //'/<(img)\b[^>]*alt=\"([^>"]+)\"[^>]*>/i',       // <img> with alt tag
     );
 
     /**
@@ -99,7 +99,7 @@ class Html2Text
         "\n",                            // <tr> and </tr>
         "\t\t\\1\n",                     // <td> and </td>
         "",                              // <span class="_html2text_ignore">...</span>
-        '[\\2]',                         // <img> with alt tag
+        //'[\\2]',                       // <img> with alt tag
     );
 
     /**
@@ -145,7 +145,8 @@ class Html2Text
         '/<(strong)( [^>]*)?>(.*?)<\/strong>/i',                 // <strong>
         '/<(del)( [^>]*)?>(.*?)<\/del>/i',                       // <del>
         '/<(th)( [^>]*)?>(.*?)<\/th>/i',                         // <th> and </th>
-        '/<(a) [^>]*href=("|\')([^"\']+)\2([^>]*)>(.*?)<\/a>/i'  // <a href="">
+        '/<(a) [^>]*href=("|\')([^"\']+)\2([^>]*)>(.*?)<\/a>/i', // <a href="">
+        '/<(img)\b[^>]*alt=\"([^>"]+)\"[^>]*>/i',                // <img> with alt tag
     );
 
     /**
@@ -218,6 +219,7 @@ class Html2Text
                                 // 'nextline' (show links on the next line)
                                 // 'table' (if a table of link URLs should be listed after the text.
                                 // 'bbcode' (show links as bbcode)
+        'do_images' => true,
 
         'width' => 70,          //  Maximum width of the formatted text, in columns.
                                 //  Set this value to 0 (or less) to ignore word wrapping
@@ -587,6 +589,13 @@ class Html2Text
                 $url = str_replace(' ', '', $matches[3]);
 
                 return $this->buildlinkList($url, $matches[5], $linkOverride);
+            case 'img':
+                // Only attempt to handle images if option is true.
+                if ($this->options['do_images']) {
+                    return sprintf('[%s]', $matches[2]);
+                }
+
+                return '';
         }
 
         return '';
