@@ -219,7 +219,8 @@ class Html2Text
                                 // 'nextline' (show links on the next line)
                                 // 'table' (if a table of link URLs should be listed after the text.
                                 // 'bbcode' (show links as bbcode)
-        'do_images' => true,
+
+        'do_images' => true,    // If false, omits image handling; essentially stripping them.
 
         'width' => 70,          //  Maximum width of the formatted text, in columns.
                                 //  Set this value to 0 (or less) to ignore word wrapping
