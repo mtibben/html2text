@@ -72,12 +72,12 @@ class Html2Text
     );
 
     /**
-     * List of pattern replacements corresponding to patterns searched.
+     * List of pattern replacements corresponding to patterns searched for rich format.
      *
      * @var array $replace
      * @see $search
      */
-    protected $replace = array(
+    protected $replaceRich = array(
         '',                              // Non-legal carriage return
         ' ',                             // Newlines and tabs
         '',                              // <head>
@@ -101,6 +101,70 @@ class Html2Text
         "",                              // <span class="_html2text_ignore">...</span>
         '[\\2]',                         // <img> with alt tag
     );
+    
+    /**
+     * List of pattern replacements corresponding to patterns searched for simple format.
+     *
+     * @var array $replace
+     * @see $search
+     */
+    protected $replaceSimple = array(
+        '',                              // Non-legal carriage return
+        ' ',                             // Newlines and tabs
+        '',                              // <head>
+        '',                              // <script>s -- which strip_tags supposedly has problems with
+        '',                              // <style>s -- which strip_tags supposedly has problems with
+        '\\1',                           // <i>
+        '\\1',                           // <em>
+        '\\1',                           // <ins>
+        "\n\n",                          // <ul> and </ul>
+        "\n\n",                          // <ol> and </ol>
+        "\n\n",                          // <dl> and </dl>
+        "\t* \\1\n",                     // <li> and </li>
+        " \\1\n",                        // <dd> and </dd>
+        "\t* \\1",                       // <dt> and </dt>
+        "\n\t* ",                        // <li>
+        "\n-------------------------\n", // <hr>
+        "<div>\n",                       // <div>
+        "\n\n",                          // <table> and </table>
+        "\n",                            // <tr> and </tr>
+        "\t\t\\1\n",                     // <td> and </td>
+        "",                              // <span class="_html2text_ignore">...</span>
+        '',                              // <img> with alt tag
+    );
+
+    /**
+     * List of pattern replacements corresponding to patterns searched for simple format.
+     *
+     * @var array $replace
+     * @see $search
+     */
+    protected $replaceInline = array(
+        '',                              // Non-legal carriage return
+        ' ',                             // Newlines and tabs
+        '',                              // <head>
+        '',                              // <script>s -- which strip_tags supposedly has problems with
+        '',                              // <style>s -- which strip_tags supposedly has problems with
+        '\\1',                           // <i>
+        '\\1',                           // <em>
+        '\\1',                           // <ins>
+        " ",                             // <ul> and </ul>
+        " ",                             // <ol> and </ol>
+        " ",                             // <dl> and </dl>
+        " \\1",                          // <li> and </li>
+        " \\1",                          // <dd> and </dd>
+        " \\1",                          // <dt> and </dt>
+        " ",                             // <li>
+        " ",                             // <hr>
+        " ",                             // <div>
+        " ",                             // <table> and </table>
+        " ",                             // <tr> and </tr>
+        " \\1",                          // <td> and </td>
+        "",                              // <span class="_html2text_ignore">...</span>
+        '',                              // <img> with alt tag
+    );
+
+        
 
     /**
      * List of preg* regular expression patterns to search for,
@@ -213,6 +277,9 @@ class Html2Text
      * @var array $options
      */
     protected $options = array(
+        'format' => 'rich',     // 'rich' (default behavior)
+                                // 'simple' (remove styling markers '_' and images)
+                                // 'inline' (keep only text in a single line string)
         'do_links' => 'inline', // 'none'
                                 // 'inline' (show links inline)
                                 // 'nextline' (show links on the next line)
@@ -371,7 +438,20 @@ class Html2Text
     {
         $this->convertBlockquotes($text);
         $this->convertPre($text);
-        $text = preg_replace($this->search, $this->replace, $text);
+        switch ($this->options['format']) {
+            case 'inline':
+                $replace = $this->replaceInline;
+                break;
+            case 'simple':
+                $replace = $this->replaceSimple;
+                break;
+            case 'rich':
+            default:
+                $replace = $this->replaceRich;
+                break;
+        }
+        
+        $text = preg_replace($this->search, $replace, $text);
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
         $text = strip_tags($text);
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
