@@ -417,7 +417,7 @@ class Html2Text
         }
 
         // Ignored link types
-        if (preg_match('!^(javascript:|mailto:|#)!i', html_entity_decode($link))) {
+        if (preg_match('!^(javascript:|mailto:|#)!i', html_entity_decode($link, $this->htmlFuncFlags, self::ENCODING))) {
             return $display;
         }
 
