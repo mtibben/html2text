@@ -57,4 +57,13 @@ class HtmlCharsTest extends TestCase
         $html2text = new Html2Text($html);
         $this->assertEquals($expected, $html2text->getText());
     }
+
+    public function testSingleQuote()
+    {
+        $html = "Single quote&#039;s preservation";
+        $expected = "Single quote's preservation";
+
+        $html2text = new Html2Text($html);
+        $this->assertEquals($expected, $html2text->getText());
+    }
 }
