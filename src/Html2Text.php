@@ -236,6 +236,10 @@ class Html2Text
      */
     public function __construct($html = '', $options = array())
     {
+        $this->htmlFuncFlags = (PHP_VERSION_ID < 50400)
+            ? ENT_QUOTES
+            : ENT_QUOTES | ENT_HTML5;
+
         // for backwards compatibility
         if (!is_array($options)) {
             return call_user_func_array(array($this, 'legacyConstruct'), func_get_args());
@@ -243,9 +247,6 @@ class Html2Text
 
         $this->html = $html;
         $this->options = array_merge($this->options, $options);
-        $this->htmlFuncFlags = (PHP_VERSION_ID < 50400)
-            ? ENT_QUOTES
-            : ENT_QUOTES | ENT_HTML5;
     }
 
     /**
