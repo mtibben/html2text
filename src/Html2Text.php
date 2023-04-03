@@ -244,8 +244,8 @@ class Html2Text
         $this->html = $html;
         $this->options = array_merge($this->options, $options);
         $this->htmlFuncFlags = (PHP_VERSION_ID < 50400)
-            ? ENT_QUOTES
-            : ENT_QUOTES | ENT_HTML5;
+            ? ENT_COMPAT
+            : ENT_COMPAT | ENT_HTML5;
     }
 
     /**
@@ -389,7 +389,7 @@ class Html2Text
         $text = preg_replace("/[\n]{3,}/", "\n\n", $text);
 
         // remove leading empty lines (can be produced by eg. P tag on the beginning)
-        $text = ltrim($text, "\n");
+        $text = ltrim($text ?? '', "\n");
 
         if ($this->options['width'] > 0) {
             $text = wordwrap($text, $this->options['width']);
@@ -417,7 +417,7 @@ class Html2Text
         }
 
         // Ignored link types
-        if (preg_match('!^(javascript:|mailto:|#)!i', html_entity_decode($link, $this->htmlFuncFlags, self::ENCODING))) {
+        if (preg_match('!^(javascript:|mailto:|#)!i', html_entity_decode($link))) {
             return $display;
         }
 
@@ -522,10 +522,10 @@ class Html2Text
                         $pWidth = $this->options['width'];
                         if ($this->options['width'] > 0) $this->options['width'] -= 2;
                         // Convert blockquote content
-                        $body = trim($body);
+                        $body = trim($body ?? '');
                         $this->converter($body);
                         // Add citation markers and create PRE block
-                        $body = preg_replace('/((^|\n)>*)/', '\\1> ', trim($body));
+                        $body = preg_replace('/((^|\n)>*)/', '\\1> ', trim($body ?? ''));
                         $body = '<pre>' . htmlspecialchars($body, $this->htmlFuncFlags, self::ENCODING) . '</pre>';
                         // Re-set text width
                         $this->options['width'] = $pWidth;
@@ -562,7 +562,7 @@ class Html2Text
                 $para = str_replace("\n", " ", $matches[3]);
 
                 // Trim trailing and leading whitespace within the tag.
-                $para = trim($para);
+                $para = trim($para ?? '');
 
                 // Add trailing newlines for this para.
                 return "\n" . $para . "\n";
