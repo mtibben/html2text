@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class ImageTest extends TestCase
 {
-    public function testImageDataProvider() {
+    public function imageDataProvider() {
         return array(
             'Without alt tag' => array(
                 'html' => '<img src="http://example.com/example.jpg">',
@@ -36,7 +36,7 @@ class ImageTest extends TestCase
     }
 
     /**
-     * @dataProvider testImageDataProvider
+     * @dataProvider imageDataProvider
      */
     public function testImages($html, $expected)
     {

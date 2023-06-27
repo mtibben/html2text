@@ -11,15 +11,15 @@ class PrintTest extends TestCase
 
     public function testP()
     {
-        $this->html = new Html2Text(self::TEST_HTML);
-        $this->html->p();
+        $html = new Html2Text(self::TEST_HTML);
+        $html->p();
         $this->expectOutputString(self::EXPECTED);
     }
 
     public function testPrint_text()
     {
-        $this->html = new Html2Text(self::TEST_HTML);
-        $this->html->print_text();
+        $html = new Html2Text(self::TEST_HTML);
+        $html->print_text();
         $this->expectOutputString(self::EXPECTED);
     }
 }

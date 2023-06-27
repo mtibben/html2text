@@ -236,6 +236,10 @@ class Html2Text
      */
     public function __construct($html = '', $options = array())
     {
+        $this->htmlFuncFlags = (PHP_VERSION_ID < 50400)
+            ? ENT_QUOTES
+            : ENT_QUOTES | ENT_HTML5;
+
         // for backwards compatibility
         if (!is_array($options)) {
             return call_user_func_array(array($this, 'legacyConstruct'), func_get_args());
@@ -243,9 +247,6 @@ class Html2Text
 
         $this->html = $html;
         $this->options = array_merge($this->options, $options);
-        $this->htmlFuncFlags = (PHP_VERSION_ID < 50400)
-            ? ENT_QUOTES
-            : ENT_QUOTES | ENT_HTML5;
     }
 
     /**
@@ -351,7 +352,7 @@ class Html2Text
     {
         $this->linkList = array();
 
-        $text = trim($this->html);
+        $text = trim($this->html ?? '');
 
         $this->converter($text);
 
@@ -389,7 +390,7 @@ class Html2Text
         $text = preg_replace("/[\n]{3,}/", "\n\n", $text);
 
         // remove leading empty lines (can be produced by eg. P tag on the beginning)
-        $text = ltrim($text, "\n");
+        $text = ltrim($text ?? '', "\n");
 
         if ($this->options['width'] > 0) {
             $text = wordwrap($text, $this->options['width']);
