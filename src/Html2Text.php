@@ -427,11 +427,14 @@ class Html2Text
         $text = str_replace('|+|amp|+|', '&', $text);
 
         // Normalise empty lines
-        $text = preg_replace("/\n\s+\n/", "\n\n", $text);
-        $text = preg_replace("/[\n]{3,}/", "\n\n", $text);
+        $text = preg_replace("/\n[(\xC2\xA0|\s)]+\n/", "\n\n", $text);
+        $text = preg_replace("/\n{3,}/", "\n\n", $text);
 
         // remove leading empty lines (can be produced by eg. P tag on the beginning)
         $text = ltrim($text, "\n");
+
+        // remove trailing white space
+        $text = preg_replace("/[(\xC2\xA0|\s)]+$/", "", $text);
 
         if ($this->options['width'] > 0) {
             $text = wordwrap($text, $this->options['width']);
