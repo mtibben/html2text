@@ -222,6 +222,9 @@ class Html2Text
         'width' => 70,          //  Maximum width of the formatted text, in columns.
                                 //  Set this value to 0 (or less) to ignore word wrapping
                                 //  and not constrain text to a fixed-width column.
+        
+        'preserve_case' => false,   //  If true then disables converting bold, th or heading
+                                    //  text to upper case.
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -611,6 +614,9 @@ class Html2Text
      */
     protected function toupper($str)
     {
+        if ($this->options['preserve_case']) {
+            return $str;
+        }
         // string can contain HTML tags
         $chunks = preg_split('/(<[^>]*>)/', $str, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
