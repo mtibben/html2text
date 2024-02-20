@@ -103,6 +103,39 @@ class Html2Text
     );
 
     /**
+     * List of pattern replacements corresponding to patterns searched.
+     * Used with 'no_underscore_italics' option.
+     * The difference from $replace is the removal of the _ around italic text.
+     *
+     * @var array $replace
+     * @see $search
+     */
+    protected $replace_plain = array(
+        '',                              // Non-legal carriage return
+        ' ',                             // Newlines and tabs
+        '',                              // <head>
+        '',                              // <script>s -- which strip_tags supposedly has problems with
+        '',                              // <style>s -- which strip_tags supposedly has problems with
+        '\\1',                           // <i>
+        '\\1',                           // <em>
+        '\\1',                           // <ins>
+        "\n\n",                          // <ul> and </ul>
+        "\n\n",                          // <ol> and </ol>
+        "\n\n",                          // <dl> and </dl>
+        "\t* \\1\n",                     // <li> and </li>
+        " \\1\n",                        // <dd> and </dd>
+        "\t* \\1",                       // <dt> and </dt>
+        "\n\t* ",                        // <li>
+        "\n-------------------------\n", // <hr>
+        "<div>\n",                       // <div>
+        "\n\n",                          // <table> and </table>
+        "\n",                            // <tr> and </tr>
+        "\t\t\\1\n",                     // <td> and </td>
+        "",                              // <span class="_html2text_ignore">...</span>
+        '[\\2]',                         // <img> with alt tag
+    );
+
+    /**
      * List of preg* regular expression patterns to search for,
      * used in conjunction with $entReplace.
      *
@@ -223,8 +256,11 @@ class Html2Text
                                 //  Set this value to 0 (or less) to ignore word wrapping
                                 //  and not constrain text to a fixed-width column.
         
-        'preserve_case' => false,   //  If true then disables converting bold, th or heading
-                                    //  text to upper case.
+        'preserve_case' => false,           //  If true then disables converting bold, th or heading
+                                            //  text to upper case.
+
+        'no_underscore_italics' => false,   //  If true then _ around italic text are suppressed.
+                                            //  Affects <i> <em> and <ins> tags.
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -374,7 +410,11 @@ class Html2Text
     {
         $this->convertBlockquotes($text);
         $this->convertPre($text);
-        $text = preg_replace($this->search, $this->replace, $text);
+        if ($this->options['no_underscore_italics']) {
+            $text = preg_replace($this->search, $this->replace_plain, $text);
+        } else {
+            $text = preg_replace($this->search, $this->replace, $text);
+        }
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
         $text = strip_tags($text);
         $text = preg_replace($this->entSearch, $this->entReplace, $text);
