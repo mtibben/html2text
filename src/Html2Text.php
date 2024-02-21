@@ -427,7 +427,7 @@ class Html2Text
         $text = str_replace('|+|amp|+|', '&', $text);
 
         // Normalise empty lines
-        $text = preg_replace("/\n[(\xC2\xA0|\s)]+\n/", "\n\n", $text);
+        $text = preg_replace("/\n(\xC2\xA0|\s)+\n/", "\n\n", $text);
         $text = preg_replace("/\n{3,}/", "\n\n", $text);
 
         // remove leading empty lines (can be produced by eg. P tag on the beginning)
