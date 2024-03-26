@@ -121,9 +121,9 @@ class Html2Text
         "\n\n",                          // <ul> and </ul>
         "\n\n",                          // <ol> and </ol>
         "\n\n",                          // <dl> and </dl>
-        "\t* \\1\n",                     // <li> and </li>
+        "\t\\1\n",                       // <li> and </li>
         " \\1\n",                        // <dd> and </dd>
-        "\t* \\1",                       // <dt> and </dt>
+        "\t\\1",                         // <dt> and </dt>
         "\n\t* ",                        // <li>
         "\n\n",                          // <hr>
         "<div>\n",                       // <div>
@@ -259,6 +259,7 @@ class Html2Text
                                 //  No converting bold, th or headings to upper case.
                                 //  No character conversion to simulate strike through for <del>
                                 //  No adding _ around italic text (<i> <em> and <ins> tags)
+                                //  No adding * for <li> or <dt>
                                 //  <hr> is replaced by "\n\n" rather than "\n-------------------------\n"
     );
 
