@@ -352,7 +352,11 @@ class Html2Text
     {
         $this->linkList = array();
 
-        $text = trim($this->html ?? '');
+        if ($this->html === null) {
+            $text = '';
+        } else {
+            $text = trim($this->html);
+        }
 
         $this->converter($text);
 
@@ -390,7 +394,10 @@ class Html2Text
         $text = preg_replace("/[\n]{3,}/", "\n\n", $text);
 
         // remove leading empty lines (can be produced by eg. P tag on the beginning)
-        $text = ltrim($text ?? '', "\n");
+        if ($text === null) {
+            $text = '';
+        }
+        $text = ltrim($text, "\n");
 
         if ($this->options['width'] > 0) {
             $text = wordwrap($text, $this->options['width']);
