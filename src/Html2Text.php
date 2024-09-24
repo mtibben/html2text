@@ -68,7 +68,6 @@ class Html2Text
         '/(<tr\b[^>]*>|<\/tr>)/i',                        // <tr> and </tr>
         '/<td\b[^>]*>(.*?)<\/td>/i',                      // <td> and </td>
         '/<span class="_html2text_ignore">.+?<\/span>/i', // <span class="_html2text_ignore">...</span>
-        '/<(img)\b[^>]*alt=\"([^>"]+)\"[^>]*>/i',         // <img> with alt tag
     );
 
     /**
@@ -99,7 +98,6 @@ class Html2Text
         "\n",                            // <tr> and </tr>
         "\t\t\\1\n",                     // <td> and </td>
         "",                              // <span class="_html2text_ignore">...</span>
-        '[\\2]',                         // <img> with alt tag
     );
 
     /**
@@ -222,6 +220,9 @@ class Html2Text
         'width' => 70,          //  Maximum width of the formatted text, in columns.
                                 //  Set this value to 0 (or less) to ignore word wrapping
                                 //  and not constrain text to a fixed-width column.
+
+        'images'=>'alt',        //  'alt' (show the alt text in brackets)
+                                //  'none' (don't show the alt text)
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -376,6 +377,7 @@ class Html2Text
 
     protected function converter(&$text)
     {
+        $this->setImgAltPreference();
         $this->convertBlockquotes($text);
         $this->convertPre($text);
         $text = preg_replace($this->search, $this->replace, $text);
@@ -404,6 +406,16 @@ class Html2Text
         if ($this->options['width'] > 0) {
             $text = wordwrap($text, $this->options['width']);
         }
+    }
+
+    /**
+     * show/hide alt text for images
+     */
+
+    protected function setImgAltPreference()
+    {
+        $this->search[] = '/<(img)\b[^>]*alt=\"([^>"]+)\"[^>]*>/i';
+        $this->replace[] = $this->options['images'] == 'alt'?'[\\2]':'';
     }
 
     /**
