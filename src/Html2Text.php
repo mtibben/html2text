@@ -222,6 +222,10 @@ class Html2Text
         'width' => 70,          //  Maximum width of the formatted text, in columns.
                                 //  Set this value to 0 (or less) to ignore word wrapping
                                 //  and not constrain text to a fixed-width column.
+
+        'convert_case' => true, //  Convert headlines, table headers, <b> and <strong> to uppercase
+                                //  Set this to false for languages with capitalization rules that
+                                //  are different from those used by mb_strtoupper (e.g. Turkish).
     );
 
     private function legacyConstruct($html = '', $fromFile = false, array $options = array())
@@ -621,6 +625,10 @@ class Html2Text
      */
     protected function toupper($str)
     {
+        if (!$this->options['convert_case']) {
+            return $str;
+        }
+
         // string can contain HTML tags
         $chunks = preg_split('/(<[^>]*>)/', $str, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
