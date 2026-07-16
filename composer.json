@@ -2,7 +2,7 @@
     "name": "html2text/html2text",
     "description": "Converts HTML to formatted plain text",
     "type": "library",
-    "license": "GPL-2.0-or-later",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Html2Text\\": "src/"
