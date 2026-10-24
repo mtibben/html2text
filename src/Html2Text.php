@@ -360,6 +360,10 @@ class Html2Text
             $text = trim($this->html);
         }
 
+        // Inline data URIs (e.g. base64 images) never end up in the text, and very
+        // long ones exhaust the PCRE backtrack limit of the patterns below (#130)
+        $text = preg_replace('/(<img\b[^>]*?\ssrc\s*=\s*)(["\'])data:[^"\']*+\2/i', '$1$2$2', $text);
+
         $this->converter($text);
 
         if ($this->linkList) {
