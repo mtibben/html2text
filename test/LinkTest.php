@@ -181,4 +181,14 @@ EOT;
 
         $this->assertEquals($expected, $html2text->getText());
     }
+
+    public function testUnquotedHref()
+    {
+        $html = '<a href=http://example.com/page?id=1>Link text</a> and <a class=x href=example.com target=_blank>other</a>';
+        $expected = 'Link text [http://example.com/page?id=1] and other [/example.com]';
+
+        $html2text = new Html2Text($html, array('do_links' => 'inline'));
+
+        $this->assertEquals($expected, $html2text->getText());
+    }
 }
