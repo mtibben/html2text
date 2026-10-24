@@ -378,6 +378,7 @@ class Html2Text
     {
         $this->convertBlockquotes($text);
         $this->convertPre($text);
+        $this->convertOrderedLists($text);
         $text = preg_replace($this->search, $this->replace, $text);
         $text = preg_replace_callback($this->callbackSearch, array($this, 'pregCallback'), $text);
         $text = strip_tags($text);
@@ -390,6 +391,9 @@ class Html2Text
         // Convert "|+|amp|+|" into "&", need to be done after handling of unknown entities
         // This properly handles situation of "&amp;quot;" in input string
         $text = str_replace('|+|amp|+|', '&', $text);
+
+        // Convert the "* |+|ol|+|N|+|" markers of ordered list items into "N. ", see convertOrderedLists()
+        $text = preg_replace('/\* \|\+\|ol\|\+\|(-?\d+)\|\+\|/', '\\1. ', $text);
 
         // Normalise empty lines
         $text = preg_replace("/\n\s+\n/", "\n\n", $text);
@@ -499,6 +503,48 @@ class Html2Text
             // free memory
             $this->preContent = '';
         }
+    }
+
+    /**
+     * Helper function for numbering the items of ordered lists.
+     *
+     * Adds a "|+|ol|+|N|+|" marker after every LI tag of an OL list, which
+     * converter() turns into "N. " instead of the "* " bullet. Nested lists
+     * and the start attribute of OL are taken into account.
+     *
+     * @param string &$text HTML content
+     */
+    protected function convertOrderedLists(&$text)
+    {
+        if (stripos($text, '<ol') === false) {
+            return;
+        }
+
+        $parts = preg_split('/(<\/?(?:ol|ul)\b[^>]*>|<li\b[^>]*>)/i', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+        // next item number of every open list, null for unordered lists
+        $lists = array();
+        foreach ($parts as $i => $part) {
+            // even parts are the content between the tags
+            if ($i % 2 === 0) {
+                continue;
+            }
+
+            if (preg_match('/^<(\/?)(ol|ul)\b/i', $part, $matches)) {
+                if ($matches[1] === '/') {
+                    array_pop($lists);
+                } elseif (strtolower($matches[2]) === 'ol') {
+                    $lists[] = preg_match('/\sstart\s*=\s*["\']?(-?\d+)/i', $part, $start) ? (int) $start[1] : 1;
+                } else {
+                    $lists[] = null;
+                }
+            } elseif ($lists && end($lists) !== null) {
+                $level = count($lists) - 1;
+                $parts[$i] = $part . '|+|ol|+|' . $lists[$level] . '|+|';
+                $lists[$level]++;
+            }
+        }
+
+        $text = implode('', $parts);
     }
 
     /**
