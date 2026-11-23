@@ -141,11 +141,11 @@ class Html2Text
         '/<(h)[123456]( [^>]*)?>(.*?)<\/h[123456]>/i',           // h1 - h6
         '/[ ]*<(p)( [^>]*)?>(.*?)<\/p>[ ]*/si',                  // <p> with surrounding whitespace.
         '/<(br)[^>]*>[ ]*/i',                                    // <br> with leading whitespace after the newline.
-        '/<(b)( [^>]*)?>(.*?)<\/b>/i',                           // <b>
-        '/<(strong)( [^>]*)?>(.*?)<\/strong>/i',                 // <strong>
-        '/<(del)( [^>]*)?>(.*?)<\/del>/i',                       // <del>
-        '/<(th)( [^>]*)?>(.*?)<\/th>/i',                         // <th> and </th>
-        '/<(a) [^>]*href=("|\')([^"\']+)\2([^>]*)>(.*?)<\/a>/i'  // <a href="">
+        '/<(b)( [^>]*)?>(.*?)<\/b>/si',                          // <b>
+        '/<(strong)( [^>]*)?>(.*?)<\/strong>/si',                // <strong>
+        '/<(del)( [^>]*)?>(.*?)<\/del>/si',                      // <del>
+        '/<(th)( [^>]*)?>(.*?)<\/th>/si',                        // <th> and </th>
+        '/<(a) [^>]*href=("|\')([^"\']+)\2([^>]*)>(.*?)<\/a>/si' // <a href="">
     );
 
     /**
@@ -660,6 +660,13 @@ class Html2Text
         $rtn = '';
         for ($i = 0; $i < mb_strlen($str); $i++) {
             $chr = mb_substr($str, $i, 1);
+
+            // Keep line breaks without a strike so the next line does not start with one
+            if ($chr === "\n") {
+                $rtn .= $chr;
+                continue;
+            }
+
             $combiningChr = chr(0xC0 | 0x336 >> 6). chr(0x80 | 0x336 & 0x3F);
             $rtn .= $chr . $combiningChr;
         }
